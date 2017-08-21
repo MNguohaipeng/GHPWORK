@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Entity
 {
+    /// <summary>
+    /// 消费记录
+    /// </summary>
     public class CrystalRecord:B_EntityBase
     {
         //用户ID

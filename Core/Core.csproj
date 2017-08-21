@@ -62,6 +62,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{b6ff7510-6585-428c-9228-83871f3365a4}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Entity\Entity.csproj">
       <Project>{a7a90e7f-47f9-46e3-9de3-fc47b2b40169}</Project>
       <Name>Entity</Name>

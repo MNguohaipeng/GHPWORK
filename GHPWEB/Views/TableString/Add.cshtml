@@ -51,20 +51,22 @@
                    
                       </div>
                     </div>
-<div class="line line-dashed b-b line-lg pull-in"></div>
-<div class="form-group">
-                      <label class="col-sm-2 control-label">是否链接其他表</label>
-                      <div class="col-sm-10">
-                        <input type="text" name='IsOtherTable' class="form-control" ng-model="Update.IsOtherTable">
-                   
-                      </div>
-                    </div>
+        <div class="line line-dashed b-b line-lg pull-in"></div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">是否链接其他表</label>
+                <div class="col-sm-10">
+
+                    <select name="IsOtherTable" class="form-control" ng-model="Update.IsOtherTable">
+                        <option value="true">是</option><option value="false">否</option>
+                    </select>
+                </div>
+            </div>
 <div class="line line-dashed b-b line-lg pull-in"></div>   
  <div class="form-group">
                 <label class="col-sm-2 control-label">其他表名</label>
                 <div class="col-sm-10">
               <input type="text" ng-hide="true"  name="OtherTableName" ng-model="Update.OtherTableName" />
-                    <select  class="form-control m-b"  ng-options="item.name as item.name for  item in OtherTableNameData" ng-model="Update.OtherTableName">
+                    <select  class="form-control m-b"  ng-options="item.TableName as item.TableName for  item in OtherTableNameData" ng-model="Update.OtherTableName">
                       </select>
                 </div>
             </div>
@@ -89,7 +91,7 @@
                 <label class="col-sm-2 control-label">表名</label>
                 <div class="col-sm-10">
               <input type="text" ng-hide="true"  name="TableName" ng-model="Update.TableName" />
-                    <select  class="form-control m-b"  ng-options="item.name as item.name for  item in TableNameData" ng-model="Update.TableName">
+                    <select  class="form-control m-b"  ng-options="item.TableName as item.TableName for  item in TableNameData" ng-model="Update.TableName">
                       </select>
                 </div>
             </div>
@@ -101,6 +103,48 @@
                    
                       </div>
                     </div>
+        <div class="line line-dashed b-b line-lg pull-in"></div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">是否有默认值</label>
+                <div class="col-sm-10">
+
+                    <select name="IsDefaultData" class="form-control" ng-model="Update.IsDefaultData">
+                        <option value="true">是</option><option value="false">否</option>
+                    </select>
+                </div>
+            </div>
+<div class="line line-dashed b-b line-lg pull-in"></div>
+<div class="form-group">
+                      <label class="col-sm-2 control-label">是否与其他字段联动</label>
+                      <div class="col-sm-10">
+                        <input type="text" name='IsOtherFieldLinkage' class="form-control" ng-model="Update.IsOtherFieldLinkage">
+                   
+                      </div>
+                    </div>
+<div class="line line-dashed b-b line-lg pull-in"></div>
+<div class="form-group">
+                      <label class="col-sm-2 control-label">其他字段名称</label>
+                      <div class="col-sm-10">
+                        <input type="text" name='OtherFieldName' class="form-control" ng-model="Update.OtherFieldName">
+                   
+                      </div>
+                    </div>
+<div class="line line-dashed b-b line-lg pull-in"></div>   
+ <div class="form-group">
+                <label class="col-sm-2 control-label">联动方式</label>
+                <div class="col-sm-10">
+              <input type="text" ng-hide="true"  name="LinkageMode" ng-model="Update.LinkageMode" />
+                    <select  class="form-control m-b"  ng-options="item.Value as item._Explain for  item in LinkageModeData" ng-model="Update.LinkageMode">
+                      </select>
+                </div>
+            </div>
+             <div class="line line-dashed b-b line-lg pull-in"></div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">配置默认值</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" name="PageDefaultData" ng-model="Update.PageDefaultData"></textarea>
+                    </div>
+                </div>
 
 
   <div class="text-center">
@@ -120,6 +164,9 @@ required:true ,
 FieldShowMing:{ 
 required:true ,
 },
+AddWhere:{ 
+required:false ,
+},
 IsOtherTable:{ 
 required:true,
 },
@@ -127,6 +174,15 @@ OtherTableName:{
 required:true,
 },
 TableName:{ 
+required:true,
+},
+IsDefaultData:{ 
+required:true,
+},
+IsOtherFieldLinkage:{ 
+required:true,
+},
+LinkageMode:{ 
 required:true,
 },
 }   }); 
@@ -192,7 +248,7 @@ $scope.GetSelectOtherTableName = function () {
             $http({
                 method: 'POST',
                 url: '/Home/GetSelectData',
-                data: { TableName: "sysobjects", Where: "xtype='u'", FildName: "name,name" }
+                data: { TableName: "AllTableInfo", Where: "", FildName: "TableName,TableName" }
             }).then(function successCallback(response) {
 
                 if (response.data.start == 0) {
@@ -212,7 +268,7 @@ $scope.GetSelectTableName = function () {
             $http({
                 method: 'POST',
                 url: '/Home/GetSelectData',
-                data: { TableName: "sysobjects", Where: "xtype='u'", FildName: "name,name" }
+                data: { TableName: "AllTableInfo", Where: "", FildName: "TableName,TableName" }
             }).then(function successCallback(response) {
 
                 if (response.data.start == 0) {
@@ -228,6 +284,28 @@ $scope.GetSelectTableName = function () {
  $scope.GetSelectTableName();
 
  
+$scope.GetSelectLinkageMode = function () {
+            $http({
+                method: 'POST',
+                url: '/Home/GetSelectData',
+                data: { TableName: "Dictionaries", Where: "_Key='FieldLinkage'", FildName: "Value,_Explain" }
+            }).then(function successCallback(response) {
+
+                if (response.data.start == 0) {
+
+                    $scope.LinkageModeData = response.data.data;
+                } else {
+
+                }
+            }, function errorCallback(response) {
+                console.log(JSON.stringify(response))
+            });
+        }
+ $scope.GetSelectLinkageMode();
+
+   
+ 
+
 	    var Id="";
 	 if($location.url()!=""){
 	 Id=$location.url().split('#')[1].split("=")[1];
@@ -241,7 +319,12 @@ $scope.GetSelectTableName = function () {
            }).then(function successCallback(response) {
                 if (response.data.start == 0) {
                     $scope.Update = response.data.data;
-							       $scope.InputType = $scope.Update.InputType;       $scope.OtherTableName = $scope.Update.OtherTableName;       $scope.TableName = $scope.Update.TableName;
+							       $scope.InputType = $scope.Update.InputType;
+       $scope.OtherTableName = $scope.Update.OtherTableName;
+       $scope.TableName = $scope.Update.TableName;
+       $scope.LinkageMode = $scope.Update.LinkageMode;
+
+$scope.Default___Json1075=JSON.parse($scope.Update.IsDefaultData)
                 } else {
                     alert( response.data.msg);
                 }
@@ -255,6 +338,9 @@ $scope.GetSelectTableName = function () {
             $scope.load();
 			
         }
+
+
+
 
     })
 </script>

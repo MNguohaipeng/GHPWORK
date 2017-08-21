@@ -77,7 +77,9 @@ $('#RoleEditForm').validate({rules: {}   });
     app.controller("GHPCtrl", function ($scope, $location,$http) {
               $scope.loading = false;
 	
-	 
+	   
+ 
+
 	    var Id="";
 	 if($location.url()!=""){
 	 Id=$location.url().split('#')[1].split("=")[1];
@@ -92,6 +94,7 @@ $('#RoleEditForm').validate({rules: {}   });
                 if (response.data.start == 0) {
                     $scope.Update = response.data.data;
 							
+
                 } else {
                     alert( response.data.msg);
                 }
@@ -105,6 +108,9 @@ $('#RoleEditForm').validate({rules: {}   });
             $scope.load();
 			
         }
+
+
+
 
     })
 </script>

@@ -7,20 +7,10 @@
 <!DOCTYPE html>
 
 <html>
-
 <head>
-
     <meta name="viewport" content="width=device-width" />
 
-    <link href="~/Template/css/bootstrap.css" rel="stylesheet" />
-
-    <link href="~/Template/css/font-awesome.min.css" rel="stylesheet" />
-
-    <link href="~/Template/css/simple-line-icons.css" rel="stylesheet" />
-
-    <link href="~/Template/css/font.css" rel="stylesheet" />
-
-    <link href="~/Template/css/app.css" rel="stylesheet" />
+    @Styles.Render("~/Template/css")
 
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
 
@@ -32,17 +22,16 @@
 
     <link href="~/Template/css/loading.css" rel="stylesheet" />
 
+
 </head>
-
 <body>
-
     <div>
-
         @RenderBody()
-
     </div>
 
-</body>
 
+ 
+ 
+</body>
 </html>
  

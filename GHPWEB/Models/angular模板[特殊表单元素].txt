@@ -37,6 +37,7 @@
               $scope.loading = false;
 	
 	 {0}
+
 	    var Id="";
 	 if($location.url()!="")【
 	 Id=$location.url().split('#')[1].split("=")[1];
@@ -64,5 +65,8 @@
             $scope.load();
 			
         】
+
+
+
 
     】)

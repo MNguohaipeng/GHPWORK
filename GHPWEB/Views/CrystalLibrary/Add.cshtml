@@ -106,7 +106,9 @@ $scope.GetSelectUserId = function () {
         }
  $scope.GetSelectUserId();
 
+   
  
+
 	    var Id="";
 	 if($location.url()!=""){
 	 Id=$location.url().split('#')[1].split("=")[1];
@@ -121,6 +123,8 @@ $scope.GetSelectUserId = function () {
                 if (response.data.start == 0) {
                     $scope.Update = response.data.data;
 							       $scope.UserId = $scope.Update.UserId;
+
+
                 } else {
                     alert( response.data.msg);
                 }
@@ -134,6 +138,9 @@ $scope.GetSelectUserId = function () {
             $scope.load();
 			
         }
+
+
+
 
     })
 </script>

@@ -21,7 +21,7 @@ namespace GHPWEB
                 "~/Template/js/wysiwyg/jquery.hotkeys.js",
                 "~/Template/js/wysiwyg/bootstrap-wysiwyg.js",
                 "~/Template/js/wysiwyg/demo.js",
-               // "~/Template/js/markdown/epiceditor.min.js",
+                "~/Template/js/markdown/epiceditor.min.js",
                 "~/Template/js/markdown/demo.js",
                 "~/Template/js/chosen/chosen.jquery.min.js",
                 "~/Template/js/app.plugin.js",
@@ -43,16 +43,16 @@ namespace GHPWEB
 
             bundles.Add(new StyleBundle("~/Template/css").Include(
    
- 
+          "~/Template/js/jPlayer/jplayer.flat.css",
           "~/Template/css/bootstrap.css",
- 
+          "~/Template/css/animate.css",
           "~/Template/css/font-awesome.min.css",
           "~/Template/css/simple-line-icons.css",
           "~/Template/css/font.css",
-          "~/Template/css/app.css"
-          //"~/Template/js/datepicker/datepicker.css",
-          //"~/Template/js/slider/slider.css",
-          //"~/Template/js/chosen/chosen.css"
+          "~/Template/css/app.css",
+          "~/Template/js/datepicker/datepicker.css",
+          "~/Template/js/slider/slider.css",
+          "~/Template/js/chosen/chosen.css"
 
           ));
             #endregion

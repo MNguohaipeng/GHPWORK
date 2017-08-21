@@ -144,7 +144,9 @@ $scope.GetSelectMenuId = function () {
         }
  $scope.GetSelectMenuId();
 
+   
  
+
 	    var Id="";
 	 if($location.url()!=""){
 	 Id=$location.url().split('#')[1].split("=")[1];
@@ -158,7 +160,10 @@ $scope.GetSelectMenuId = function () {
            }).then(function successCallback(response) {
                 if (response.data.start == 0) {
                     $scope.Update = response.data.data;
-							       $scope.ButtonId = $scope.Update.ButtonId;       $scope.MenuId = $scope.Update.MenuId;
+							       $scope.ButtonId = $scope.Update.ButtonId;
+       $scope.MenuId = $scope.Update.MenuId;
+
+
                 } else {
                     alert( response.data.msg);
                 }
@@ -172,6 +177,9 @@ $scope.GetSelectMenuId = function () {
             $scope.load();
 			
         }
+
+
+
 
     })
 </script>
