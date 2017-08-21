@@ -249,9 +249,7 @@ $scope.GetSelectXianQu = function () {
         }
  $scope.GetSelectXianQu();
 
-   
  
-
 	    var Id="";
 	 if($location.url()!=""){
 	 Id=$location.url().split('#')[1].split("=")[1];
@@ -265,11 +263,7 @@ $scope.GetSelectXianQu = function () {
            }).then(function successCallback(response) {
                 if (response.data.start == 0) {
                     $scope.Update = response.data.data;
-							       $scope.ShengFen = $scope.Update.ShengFen;
-       $scope.ChengShi = $scope.Update.ChengShi;
-       $scope.XianQu = $scope.Update.XianQu;
-
-
+							       $scope.ShengFen = $scope.Update.ShengFen;       $scope.ChengShi = $scope.Update.ChengShi;       $scope.XianQu = $scope.Update.XianQu;
                 } else {
                     alert( response.data.msg);
                 }
@@ -283,9 +277,6 @@ $scope.GetSelectXianQu = function () {
             $scope.load();
 			
         }
-
-
-
 
     })
 </script>

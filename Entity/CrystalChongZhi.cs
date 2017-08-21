@@ -7,9 +7,6 @@ using System.Threading.Tasks;
 
 namespace Entity
 {
-    /// <summary>
-    /// 充值记录
-    /// </summary>
    public class CrystalChongZhi:B_EntityBase
     {
         //用户ID

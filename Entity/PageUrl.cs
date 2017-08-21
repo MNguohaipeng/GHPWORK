@@ -21,8 +21,8 @@ namespace Entity
         [SugarColumn(IsNullable = false, Length = 500)]
         public string ControllerUrl { get; set; }
 
-        [SugarColumn(IsNullable = false, Length = 50)]
-        public string IsUserEdit { get; set; }
+        [SugarColumn(IsNullable =false)]
+        public bool IsUserEdit { get; set; }
 
 
     }

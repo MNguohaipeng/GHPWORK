@@ -7,9 +7,6 @@ using System.Threading.Tasks;
 
 namespace Entity
 {
-    /// <summary>
-    /// 水晶库
-    /// </summary>
    public class CrystalLibrary:B_EntityBase
     {
         //用户ID

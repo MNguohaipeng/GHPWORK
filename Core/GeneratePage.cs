@@ -7,14 +7,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using SqlSugar;
-using System.Data;
-
 namespace Core
 {
-/*
- *2017年8月18日16:55:38  郭海鹏
- * 生成页面类
- */
     public class GeneratePage
     {
 
@@ -47,7 +41,7 @@ namespace Core
 
                         var xxx = db.Queryable<Entity.TableString>().Where(T => T.IsDeleted == false && T.TableName == EntityName).ToSql();
 
-                        List<Entity.TableString> TableString = db.Queryable<Entity.TableString>().Where(T => T.IsDeleted == false && T.TableName == EntityName).ToList();
+                        List < Entity.TableString> TableString = db.Queryable<Entity.TableString>().Where(T => T.IsDeleted == false && T.TableName == EntityName).ToList();
 
                         //创建list
                         ListHtml(TableString, data[i].EntityName, ProjectFileUrl + data[i].HtmlUrl);
@@ -68,18 +62,17 @@ namespace Core
         }
 
 
-
+ 
         //加载list
-        private static void ListHtml(List<Entity.TableString> TableString, string entityName, string HtmlUrl)
-        {
+        private static void ListHtml(List<Entity.TableString> TableString, string entityName, string HtmlUrl) {
             using (var db = LinkDBHelper.CreateDB())
                 try
                 {
                     #region 创建Listhtml
-                    using (StreamWriter listhtml = new StreamWriter(HtmlUrl + @"\List.cshtml", false, Encoding.UTF8))//创建文件
+                    using (StreamWriter listhtml = new StreamWriter( HtmlUrl + @"\List.cshtml", false, Encoding.UTF8))//创建文件
                     {
                         string cshtml = File.ReadAllText(ProjectFileUrl + @"\Models\cshtmlList模板.txt");
-
+                  
                         string scriptCode = File.ReadAllText(ProjectFileUrl + @"\Models\ListScript模板.txt");
                         string thead = "";
 
@@ -92,26 +85,25 @@ namespace Core
                         foreach (var item in TableString)
                         {
                             thead += "{";
-                            thead += "name:'" + item.FieldShowMing + "',";
+                            thead += "name:'" + item.FieldShowMing+"',";
                             thead += "value:'" + item.FieldName + "',";
                             thead += "IsOrder:false" + ",";
                             thead += "},";
                         }
                         thead = thead.TrimEnd(',');
-
+ 
 
                         scriptCode = string.Format(scriptCode, thead, entityName);
                         scriptCode = scriptCode.Replace("^|", "{");
                         scriptCode = scriptCode.Replace("|^", "}");
-                        string ListhtmlString = string.Format(cshtml, entityName, scriptCode);
+                        string ListhtmlString = string.Format(cshtml, entityName,scriptCode);
                         ListhtmlString = ListhtmlString.Replace("【", "{");
                         ListhtmlString = ListhtmlString.Replace("】", "}");
                         listhtml.Write(ListhtmlString);
                     }
                     #endregion
                 }
-                catch (RuntimeAbnormal ex)
-                {
+                catch (RuntimeAbnormal ex) {
                     throw;
                 }
                 catch (Exception ex)
@@ -122,9 +114,8 @@ namespace Core
 
         }
 
-        private static void AddHtml(List<Entity.TableString> TableString, string entityName, string HtmlUrl, string pageName)
-        {
-            using (var db = LinkDBHelper.CreateDB())
+        private static void AddHtml(List<Entity.TableString> TableString, string entityName, string HtmlUrl,string pageName) {
+            using (var db=LinkDBHelper.CreateDB())
 
             using (StreamWriter sw = new StreamWriter(HtmlUrl + "/Add.cshtml", false, Encoding.UTF8))//创建文件
             {
@@ -136,15 +127,9 @@ namespace Core
 
                     string Script = "";
 
-                    string Select = "";
+                    string Select="";
 
                     string MrSelect = "";
-
-                    string AddDefaultSelect = "";//默认值下拉编辑框
-
-                    string AddDefaultSelectScript = "";//默认值下拉编辑框
-
-                    string DefaultSelectData = "";//默认下拉数据处理
 
                     foreach (var item in TableString)
                     {
@@ -159,57 +144,22 @@ namespace Core
                             switch (one.YSType)
                             {
                                 case "6"://Select
-                                    if (item.IsOtherTable == "false")
+                                    if (item.IsOtherTable == false)
                                         throw new Exception("生成下拉框必须要关联到表的数据");
 
-                                    input += string.Format(one.YSValue, item.FieldName, item.OtherTableFieldBC, item.OtherTableFieldZS, (item.FieldName + "Data"), item.FieldShowMing, item.FieldName);
+                                    input += string.Format(one.YSValue, item.FieldName, item.OtherTableFieldBC, item.OtherTableFieldZS,(item.FieldName + "Data"), item.FieldShowMing, item.FieldName);
 
-                                    input = input.Replace("【", "{");
+                                    input = input.Replace("【","{");
                                     input = input.Replace("】", "}");
-                                    string Ls = File.ReadAllText(ProjectFileUrl + @"\Models\angularGetSelectData方法模板.txt");
-                                    Select += string.Format(Ls, "GetSelect" + item.FieldName, item.OtherTableName, item.OtherTableWhere, (item.OtherTableFieldBC + "," + item.OtherTableFieldZS), (item.FieldName + "Data"));
+                                    string Ls= File.ReadAllText(ProjectFileUrl + @"\Models\angularGetSelectData方法模板.txt");
+                                    Select +=string.Format(Ls,"GetSelect"+ item.FieldName,item.OtherTableName,item.OtherTableWhere, (item.OtherTableFieldBC+","+ item.OtherTableFieldZS), (item.FieldName+"Data"));
 
-                                    MrSelect += "       $scope." + item.FieldName + " = $scope.Update." + item.FieldName + ";\n";
-
-
-                                    break;
-                                case "7"://AddDefaultSelect
- 
-                                        //获取对应的字段HTML
-                                        var ModeHtml = db.Queryable<Entity.EditPage>().Where(T => T.IsDeleted == false && T.YSName == item.InputType);
-                                        if (ModeHtml.Count()<=0)
-                                            throw new Exception(@"没有查询到对用的输入类型：位置GeneratePage\AddHtml函数");
-
-                                        AddDefaultSelect = string.Format(ModeHtml.First().YSValue,item.FieldName,item.FieldShowMing);
-
-                                        input += AddDefaultSelect;
- 
-                                    break;
-
-                                case "9":
-                                    //获取对应的字段HTML
-                                    var DefaultSelectHtml = db.Queryable<Entity.EditPage>().Where(T => T.IsDeleted == false && T.YSName == item.InputType);
-                                    if (DefaultSelectHtml.Count() <= 0)
-                                        throw new Exception(@"没有查询DefaultSelectHtml：位置GeneratePage\AddHtml函数");
-
-                                    DataTable table = Common.JsonHelper.ToDataTable(item.PageDefaultData);
-                                    string Option = "";
-                                    for (int i = 0; i < table.Rows.Count; i++)
-                                    {
-                                        Option += "<option value=\""+table.Rows[i]["Value"]+ "\">" + table.Rows[i]["Key"] + "</option>";
-
-                                    }
-
-                                    AddDefaultSelect = string.Format(DefaultSelectHtml.First().YSValue,item.FieldName,item.FieldShowMing, Option);
-
-                                    input += AddDefaultSelect;
-
-                                    DefaultSelectData = "$scope.Default___Json" + item.Id + "=JSON.parse($scope.Update."+ item.FieldName + ")";
+                                    MrSelect += "       $scope."+ item.FieldName + " = $scope.Update."+ item.FieldName + ";";
+                            
 
                                     break;
-
                                 default:
-                                    input += string.Format(one.YSValue,item.FieldShowMing, item.FieldName);
+                                    input += string.Format(one.YSValue, item.FieldShowMing, item.FieldName);
                                     break;
 
                             }
@@ -252,10 +202,8 @@ namespace Core
                     }
 
                     Script = Script.TrimEnd(',');
- 
-                    Script += "】   】);";
- 
 
+                    Script += "】   】);";
 
                     #endregion
 
@@ -264,17 +212,13 @@ namespace Core
                     string cshtml = File.ReadAllText(ProjectFileUrl + @"\Models\cshtml模版.txt");
 
                     string PageName = pageName;
+ 
+                    Script+= File.ReadAllText(ProjectFileUrl + @"\Models\angular模板[特殊表单元素].txt");
 
-                    Script += File.ReadAllText(ProjectFileUrl + @"\Models\angular模板[特殊表单元素].txt");
-
-                    
-
-                    Script = string.Format(Script, Select+"  \n "+ AddDefaultSelectScript, MrSelect+"\n"+ DefaultSelectData);
+                    Script = string.Format(Script, Select, MrSelect);
 
                     string AddHtml = string.Format(cshtml, PageName, entityName + "EditForm", input, "", Script);
-
-                    Script += AddDefaultSelectScript;
-
+ 
                     AddHtml = AddHtml.Replace("【", "{");
 
                     AddHtml = AddHtml.Replace("】", "}");
@@ -301,5 +245,5 @@ namespace Core
 
             }
         }
-    }
+        }
 }
