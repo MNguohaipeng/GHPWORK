@@ -1,0 +1,105 @@
+﻿
+@{
+    ViewBag.Title = "MenuButtonPage";
+ 
+}
+<script src="~/Scripts/angular.js"></script>
+
+<section class="panel panel-default" ng-app="GHPAPP" ng-controller="GHPCtrl">
+    <header class="panel-heading">
+        编辑页面配置
+    </header>
+    <section class="panel  col-lg-6">
+        <header class="panel-heading">菜单</header>
+        <div ng-repeat="x in menulist" ng-if="x.Level==1" style="padding:10px;margin:2px;border:1px #808080 solid">
+            <button class="btn btn-s-md btn-info" ng-click="loadmenubutton(x.Id)">{{x.MenuName}}</button>
+            <div ng-repeat="y in menulist" ng-if="y.ParentID==x.Id"  ng-click="loadmenubutton(y.Id)" style="padding:10px;border:1px #808080 solid">
+                &nbsp; &nbsp; <button class="btn btn-s-md btn-warning btn-rounded">{{y.MenuName}}</button>
+            </div> 
+        </div>
+
+    </section>
+    <section class="panel panel-default col-lg-6">
+        <header class="panel-heading">按钮</header>
+        <div>
+            <table>
+                <tr ng-repeat="x in menubuttonlist" >
+                <td ng-repeat="y in buttonlist">
+                        <div class="checkbox i-checks">
+                            <label>
+                                <input type="checkbox" checked="" ng-if="y.Id==x.ButtonId"><i></i>
+                            </label>
+                        </div>
+                </td>
+                <td  ng-repeat="y in buttonlist" ng-if="y.Id==x.ButtonId">{{y.ButtonName}}</td>
+                </tr>
+            </table>
+        </div>
+    </section>
+</section>
+
+<script>
+    var app = angular.module("GHPAPP", []);
+    app.controller("GHPCtrl", function ($scope, $http) {
+        $scope.loadmenu = function () {
+
+            $http({
+                method: 'POST',
+                url: 'GetMenu'
+            }).then(function successCallback(response) {
+
+                if (response.data.start == 0) {
+                    $scope.menulist = response.data.data;
+                } else {
+                    alert(response.data.msg);
+                }
+
+            }, function errorCallback(response) {
+                // 请求失败执行代码
+            });
+
+        }
+
+        $scope.loadbutton = function () {
+
+            $http({
+                method: 'POST',
+                url: 'GetButton'
+            }).then(function successCallback(response) {
+
+                if (response.data.start == 0) {
+                    $scope.buttonlist = response.data.data;
+                } else {
+                    alert(response.data.msg);
+                }
+
+            }, function errorCallback(response) {
+                // 请求失败执行代码
+            });
+        }
+
+        $scope.loadmenubutton = function (Id) {
+
+            $http({
+                method: 'POST',
+                url: 'GetMenuButton',
+                data: {menuId:Id}
+            }).then(function successCallback(response) {
+
+                if (response.data.start == 0) {
+                    $scope.menubuttonlist=response.data.data;
+                } else {
+                    alert(response.data.msg);
+                }
+
+            }, function errorCallback(response) {
+                // 请求失败执行代码
+            });
+        }
+
+        $scope.loadmenu();
+        $scope.loadbutton();
+    
+    })
+
+</script>

@@ -1,0 +1,191 @@
+﻿ 
+  @{
+ Layout = "~/Views/Shared/_Layout_Body.cshtml";
+ }
+
+
+
+
+@Scripts.Render("~/bundles/Validata")
+
+<section class="panel panel-default" ng-app="GHPAPP" ng-controller="GHPCtrl">
+ 
+  <header class="panel-heading font-bold">
+                  语音聊天记录
+                </header>
+
+<div class="panel-body">
+ 
+  <form class="form-horizontal" method="POST" action="Save" id="VoiceChatRecordEditForm">    
+  <input type="text" ng-hide="true" name="Id" ng-model="Update.Id"/>
+  <div class="line line-dashed b-b line-lg pull-in"></div>   
+ <div class="form-group">
+                <label class="col-sm-2 control-label">用户ID</label>
+                <div class="col-sm-10">
+              <input type="text" ng-hide="true"  name="UserId" ng-model="Update.UserId" />
+                    <select  class="form-control m-b"  ng-options="item.Id as item.LoginName for  item in UserIdData" ng-model="Update.UserId">
+                      </select>
+                </div>
+            </div>
+ <div class="line line-dashed b-b line-lg pull-in"></div>   
+ <div class="form-group">
+                <label class="col-sm-2 control-label">连接用户ID</label>
+                <div class="col-sm-10">
+              <input type="text" ng-hide="true"  name="LinkUserId" ng-model="Update.LinkUserId" />
+                    <select  class="form-control m-b"  ng-options="item.Id as item.LoginName for  item in LinkUserIdData" ng-model="Update.LinkUserId">
+                      </select>
+                </div>
+            </div>
+ 
+<div class="line line-dashed b-b line-lg pull-in"></div>
+<div class="form-group">
+                      <label class="col-sm-2 control-label">时常</label>
+                      <div class="col-sm-10">
+                        <input type="number" name='Often' class="form-control" ng-model="Update.Often">
+                   
+                      </div>
+                    </div>
+<div class="line line-dashed b-b line-lg pull-in"></div>
+<div class="form-group">
+                      <label class="col-sm-2 control-label">产生费用</label>
+                      <div class="col-sm-10">
+                        <input type="number" name='GenerateExpenses' class="form-control" ng-model="Update.GenerateExpenses">
+                   
+                      </div>
+                    </div>
+
+  <div class="text-center">
+  <button class="btn btn-s-md btn-default" type="submit">保存</button>
+    <button class="btn btn-s-md btn-default" type="button" onclick="location='List'">取消</button>
+  </div>
+
+</form>
+</div>
+ 
+</section>
+
+<script>
+$('#VoiceChatRecordEditForm').validate({rules: {Often:{ 
+required:true,
+},
+GenerateExpenses:{ 
+required:true,
+},
+}   }); 
+ 
+ 
+ 
+ 
+ var app = angular.module("GHPAPP", []);
+
+
+
+
+ //app.module("GHPAPP", [])
+ //    .factory('httpInterceptor', ['$q', '$injector', function ($q, $injector) {
+ //        var httpInterceptor = {
+ //            'responseError': function (response){
+ //                $scope.loading = false;
+ //                return $q.reject(response);
+ //            },
+ //            'response': function (response) {
+ //                $scope.loading = false;
+ //                return response;
+ //            },
+ //            'request': function (config) {
+ //                $scope.loading = true;
+ //                return config;
+ //            },
+ //            'requestError': function (config) {
+ //                $scope.loading = false;
+ //                return $q.reject(config);
+ //            }
+ //        }
+ //        return httpInterceptor;
+ //    }])
+
+
+
+    app.controller("GHPCtrl", function ($scope, $location,$http) {
+              $scope.loading = false;
+	
+	 
+$scope.GetSelectUserId = function () {
+            $http({
+                method: 'POST',
+                url: '/Home/GetSelectData',
+                data: { TableName: "Users", Where: "", FildName: "Id,LoginName" }
+            }).then(function successCallback(response) {
+
+                if (response.data.start == 0) {
+
+                    $scope.UserIdData = response.data.data;
+                } else {
+
+                }
+            }, function errorCallback(response) {
+                console.log(JSON.stringify(response))
+            });
+        }
+ $scope.GetSelectUserId();
+
+ 
+$scope.GetSelectLinkUserId = function () {
+            $http({
+                method: 'POST',
+                url: '/Home/GetSelectData',
+                data: { TableName: "Users", Where: "", FildName: "Id,LoginName" }
+            }).then(function successCallback(response) {
+
+                if (response.data.start == 0) {
+
+                    $scope.LinkUserIdData = response.data.data;
+                } else {
+
+                }
+            }, function errorCallback(response) {
+                console.log(JSON.stringify(response))
+            });
+        }
+ $scope.GetSelectLinkUserId();
+
+   
+ 
+
+	    var Id="";
+	 if($location.url()!=""){
+	 Id=$location.url().split('#')[1].split("=")[1];
+	 }
+ 
+        $scope.load = function () {
+            $http({
+                method: 'POST',
+                url: 'GetUpdateData',
+                data: { Id: Id }
+           }).then(function successCallback(response) {
+                if (response.data.start == 0) {
+                    $scope.Update = response.data.data;
+							       $scope.UserId = $scope.Update.UserId;
+       $scope.LinkUserId = $scope.Update.LinkUserId;
+
+
+                } else {
+                    alert( response.data.msg);
+                }
+            }, function errorCallback(response){
+                // 请求失败执行代码
+           });
+
+        }
+
+        if (Id != "") {
+            $scope.load();
+			
+        }
+
+
+
+
+    })
+</script>
+ 

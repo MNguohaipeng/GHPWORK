@@ -1,0 +1,36 @@
+﻿ 
+  @【
+ Layout = "~/Views/Shared/_Layout_Body.cshtml";
+ 】
+
+{3}
+
+
+@Scripts.Render("~/bundles/Validata")
+
+<section class="panel panel-default" ng-app="GHPAPP" ng-controller="GHPCtrl">
+ 
+  <header class="panel-heading font-bold">
+                  {0}
+                </header>
+
+<div class="panel-body">
+ 
+  <form class="form-horizontal" method="POST" action="Save" id="{1}">    
+  <input type="text" ng-hide="true" name="Id" ng-model="Update.Id"/>
+  {2}
+
+  <div class="text-center">
+  <button class="btn btn-s-md btn-default" type="submit">保存</button>
+    <button class="btn btn-s-md btn-default" type="button" onclick="location='List'">取消</button>
+  </div>
+
+</form>
+</div>
+ 
+</section>
+
+<script>
+{4}
+</script>
+ 
