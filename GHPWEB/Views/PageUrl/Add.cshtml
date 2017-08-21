@@ -50,14 +50,16 @@
                    
                       </div>
                     </div>
-<div class="line line-dashed b-b line-lg pull-in"></div>
-<div class="form-group">
-                      <label class="col-sm-2 control-label">是否启用用户编辑</label>
-                      <div class="col-sm-10">
-                        <input type="text" name='IsUserEdit' class="form-control" ng-model="Update.IsUserEdit">
-                   
-                      </div>
-                    </div>
+        <div class="line line-dashed b-b line-lg pull-in"></div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">是否启用用户编辑</label>
+                <div class="col-sm-10">
+
+                    <select name="IsUserEdit" class="form-control" ng-model="Update.IsUserEdit">
+                        <option value="true">是</option><option value="false">否</option>
+                    </select>
+                </div>
+            </div>
 
 
   <div class="text-center">
@@ -141,7 +143,7 @@ required:true,
                 if (response.data.start == 0) {
                     $scope.Update = response.data.data;
 							
-
+$scope.Default___Json1027=JSON.parse($scope.Update.IsUserEdit)
                 } else {
                     alert( response.data.msg);
                 }

@@ -37,6 +37,10 @@ namespace Entity
         [SugarColumn(IsNullable = false)]
         public double GenerateExpenses { get; set; }
 
-
+        /// <summary>
+        /// 是否接听  {0是 1否}
+        /// </summary>
+        [SugarColumn(IsNullable = false)]
+        public string IsJieTing { get; set; }
     }
 }

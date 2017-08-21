@@ -50,28 +50,17 @@
                    
                       </div>
                     </div>
-            <div class="line line-dashed b-b line-lg pull-in"></div>
+        <div class="line line-dashed b-b line-lg pull-in"></div>
             <div class="form-group">
                 <label class="col-sm-2 control-label">是否外接数据</label>
-                <input type="hidden" name="IsWaiJieData" value="{{Default___Json}}" />
-                <div class="form-group" ng-repeat="x in Default___Json">
-                    <label class="col-sm-2 control-label" ng-if="!$first"></label>
+                <div class="col-sm-10">
 
-                    <label class="col-sm-1 control-label">Key</label>
-                    <div class="col-sm-2">
-                        <input type="text" class="form-control" ng-model="x.Key" />
-                    </div>
-                    <label class="col-sm-1 control-label">Value</label>
-                    <div class="col-sm-2">
-                        <input type="text" class="form-control" ng-model="x.Value" />
-                    </div>
-                    <div class="col-sm-3">
-                        <button class="btn" ng-click="Default___AddJson()" type="button" ng-if="$first"><i class="icon icon-plus"></i></button>
-                        <button class="btn" ng-click="Default___RemoveJson($index)" type="button" ng-if="!$first"><i class="icon icon-close bg-gradient"></i></button>
-
-                    </div>
+                    <select name="IsWaiJieData" class="form-control" ng-model="Update.IsWaiJieData">
+                        <option value="true">是</option><option value="false">否</option>
+                    </select>
                 </div>
-            </div><div class="line line-dashed b-b line-lg pull-in"></div>   
+            </div>
+<div class="line line-dashed b-b line-lg pull-in"></div>   
  <div class="form-group">
                 <label class="col-sm-2 control-label">其他表名</label>
                 <div class="col-sm-10">
@@ -183,23 +172,7 @@ $scope.GetSelectOtherTableName = function () {
  $scope.GetSelectOtherTableName();
 
    
- //默认值
-    $scope.Default___Json= [{ "Key": "", "Value": "" }];
-
-
-
-
-    $scope.Default___AddJson= function () {
-            $scope.Default___Json.push({ "Key": "", "Value": ""});
  
-        }
-
-        $scope.Default___RemoveJson= function ($index) {
-
-            $scope.Default___Json.splice($index, 1);
- 
-        }
-
 
 	    var Id="";
 	 if($location.url()!=""){
@@ -216,7 +189,7 @@ $scope.GetSelectOtherTableName = function () {
                     $scope.Update = response.data.data;
 							       $scope.OtherTableName = $scope.Update.OtherTableName;
 
-
+$scope.Default___Json1060=JSON.parse($scope.Update.IsWaiJieData)
                 } else {
                     alert( response.data.msg);
                 }

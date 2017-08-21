@@ -40,7 +40,8 @@ namespace Entity
         [SugarColumn(IsNullable = true, Length = 500)]
         public string AddWhere { get; set; }  //添加时的筛选条件 用逗号分割  不能为空等等~~~
 
-        public bool IsOtherTable { get; set; } //是否关联其他表数据
+        [SugarColumn(IsNullable = true, Length = 500)]
+        public string IsOtherTable { get; set; } //是否关联其他表数据
 
         [SugarColumn(IsNullable= true, Length = 500)]
         public string OtherTableName { get; set; }//其他表名称  

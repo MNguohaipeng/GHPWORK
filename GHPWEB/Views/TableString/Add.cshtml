@@ -56,12 +56,12 @@
                 <label class="col-sm-2 control-label">是否链接其他表</label>
                 <div class="col-sm-10">
 
-                    <select  name="IsOtherTable" class="form-control">
-                       
+                    <select name="IsOtherTable" class="form-control" ng-model="Update.IsOtherTable">
+                        <option value="true">是</option><option value="false">否</option>
                     </select>
                 </div>
             </div>
-    <div class="line line-dashed b-b line-lg pull-in"></div>   
+<div class="line line-dashed b-b line-lg pull-in"></div>   
  <div class="form-group">
                 <label class="col-sm-2 control-label">其他表名</label>
                 <div class="col-sm-10">
@@ -103,14 +103,16 @@
                    
                       </div>
                     </div>
-<div class="line line-dashed b-b line-lg pull-in"></div>
-<div class="form-group">
-                      <label class="col-sm-2 control-label">是否有默认值</label>
-                      <div class="col-sm-10">
-                        <input type="text" name='IsDefaultData' class="form-control" ng-model="Update.IsDefaultData">
-                   
-                      </div>
-                    </div>
+        <div class="line line-dashed b-b line-lg pull-in"></div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">是否有默认值</label>
+                <div class="col-sm-10">
+
+                    <select name="IsDefaultData" class="form-control" ng-model="Update.IsDefaultData">
+                        <option value="true">是</option><option value="false">否</option>
+                    </select>
+                </div>
+            </div>
 <div class="line line-dashed b-b line-lg pull-in"></div>
 <div class="form-group">
                       <label class="col-sm-2 control-label">是否与其他字段联动</label>
@@ -136,7 +138,14 @@
                       </select>
                 </div>
             </div>
- 
+             <div class="line line-dashed b-b line-lg pull-in"></div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">配置默认值</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" name="PageDefaultData" ng-model="Update.PageDefaultData"></textarea>
+                    </div>
+                </div>
+
 
   <div class="text-center">
   <button class="btn btn-s-md btn-default" type="submit">保存</button>
@@ -312,7 +321,7 @@ $scope.GetSelectLinkageMode = function () {
        $scope.TableName = $scope.Update.TableName;
        $scope.LinkageMode = $scope.Update.LinkageMode;
 
-$scope.Default___Json19=JSON.parse($scope.Update.IsOtherTable)
+$scope.Default___Json1075=JSON.parse($scope.Update.IsDefaultData)
                 } else {
                     alert( response.data.msg);
                 }

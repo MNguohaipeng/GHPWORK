@@ -52,7 +52,17 @@
                         <input type="number" name='GenerateExpenses' class="form-control" ng-model="Update.GenerateExpenses">
                    
                       </div>
-                    </div>
+                    </div>        <div class="line line-dashed b-b line-lg pull-in"></div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">是否接听</label>
+                <div class="col-sm-10">
+
+                    <select name="IsJieTing" class="form-control" ng-model="Update.IsJieTing">
+                        <option value="0">是</option><option value="1">否</option>
+                    </select>
+                </div>
+            </div>
+
 
   <div class="text-center">
   <button class="btn btn-s-md btn-default" type="submit">保存</button>
@@ -168,7 +178,7 @@ $scope.GetSelectLinkUserId = function () {
 							       $scope.UserId = $scope.Update.UserId;
        $scope.LinkUserId = $scope.Update.LinkUserId;
 
-
+$scope.Default___Json1084=JSON.parse($scope.Update.IsJieTing)
                 } else {
                     alert( response.data.msg);
                 }

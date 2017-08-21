@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using SqlSugar;
+using System.Data;
 
 namespace Core
 {
@@ -158,7 +159,7 @@ namespace Core
                             switch (one.YSType)
                             {
                                 case "6"://Select
-                                    if (item.IsOtherTable == false)
+                                    if (item.IsOtherTable == "false")
                                         throw new Exception("生成下拉框必须要关联到表的数据");
 
                                     input += string.Format(one.YSValue, item.FieldName, item.OtherTableFieldBC, item.OtherTableFieldZS, (item.FieldName + "Data"), item.FieldShowMing, item.FieldName);
@@ -173,11 +174,7 @@ namespace Core
 
                                     break;
                                 case "7"://AddDefaultSelect
-                                         //是否有默认值
-
-
-                                    if (item.IsDefaultData) {
-
+ 
                                         //获取对应的字段HTML
                                         var ModeHtml = db.Queryable<Entity.EditPage>().Where(T => T.IsDeleted == false && T.YSName == item.InputType);
                                         if (ModeHtml.Count()<=0)
@@ -186,20 +183,7 @@ namespace Core
                                         AddDefaultSelect = string.Format(ModeHtml.First().YSValue,item.FieldName,item.FieldShowMing);
 
                                         input += AddDefaultSelect;
-
-                                        string LsYsname=ModeHtml.First().YSName + "Script";
-
-                                        //获取对应的字段Script
-                                        var ModeScript = db.Queryable<Entity.EditPage>().Where(T => T.IsDeleted == false && T.YSName == LsYsname);
-
-                                        if (ModeScript.Count() <= 0)
-                                            throw new Exception(@"没有查询到对用的输入类型Script：位置GeneratePage\AddHtml函数");
-
-                                        string xxxxxx = ModeScript.First().YSValue;
-
-                                        AddDefaultSelectScript =ModeScript.First().YSValue;
-                                    }
-
+ 
                                     break;
 
                                 case "9":
@@ -208,7 +192,15 @@ namespace Core
                                     if (DefaultSelectHtml.Count() <= 0)
                                         throw new Exception(@"没有查询DefaultSelectHtml：位置GeneratePage\AddHtml函数");
 
-                                    AddDefaultSelect = string.Format(DefaultSelectHtml.First().YSValue,item.FieldName,item.FieldShowMing,"");
+                                    DataTable table = Common.JsonHelper.ToDataTable(item.PageDefaultData);
+                                    string Option = "";
+                                    for (int i = 0; i < table.Rows.Count; i++)
+                                    {
+                                        Option += "<option value=\""+table.Rows[i]["Value"]+ "\">" + table.Rows[i]["Key"] + "</option>";
+
+                                    }
+
+                                    AddDefaultSelect = string.Format(DefaultSelectHtml.First().YSValue,item.FieldName,item.FieldShowMing, Option);
 
                                     input += AddDefaultSelect;
 
