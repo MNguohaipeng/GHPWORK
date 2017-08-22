@@ -1,0 +1,147 @@
+﻿ 
+  @{
+ Layout = "~/Views/Shared/_Layout_Body.cshtml";
+ }
+
+
+
+
+@Scripts.Render("~/bundles/Validata")
+
+<section class="panel panel-default" ng-app="GHPAPP" ng-controller="GHPCtrl">
+ 
+  <header class="panel-heading font-bold">
+                  APP推荐管理
+                </header>
+
+<div class="panel-body">
+ 
+  <form class="form-horizontal" method="POST" action="Save" id="APPIndexTuiJianEditForm">    
+  <input type="text" ng-hide="true" name="Id" ng-model="Update.Id"/>
+  <div class="line line-dashed b-b line-lg pull-in"></div>   
+ <div class="form-group">
+                <label class="col-sm-2 control-label">用户编号</label>
+                <div class="col-sm-10">
+              <input type="text" ng-hide="true"  name="UserCode" ng-model="Update.UserCode" />
+                    <select  class="form-control m-b"  ng-options="item.UserCode as item.RealName for  item in UserCodeData" ng-model="Update.UserCode">
+                      </select>
+                </div>
+            </div>
+ 
+<div class="line line-dashed b-b line-lg pull-in"></div>
+<div class="form-group">
+                      <label class="col-sm-2 control-label">顺序编号</label>
+                      <div class="col-sm-10">
+                        <input type="number" name='Index' class="form-control" ng-model="Update.Index">
+                   
+                      </div>
+                    </div>
+
+  <div class="text-center">
+  <button class="btn btn-s-md btn-default" type="submit">保存</button>
+    <button class="btn btn-s-md btn-default" type="button" onclick="location='List'">取消</button>
+  </div>
+
+</form>
+</div>
+ 
+</section>
+
+<script>
+$('#APPIndexTuiJianEditForm').validate({rules: {}   }); 
+ 
+ 
+ 
+ 
+ var app = angular.module("GHPAPP", []);
+
+
+
+
+ //app.module("GHPAPP", [])
+ //    .factory('httpInterceptor', ['$q', '$injector', function ($q, $injector) {
+ //        var httpInterceptor = {
+ //            'responseError': function (response){
+ //                $scope.loading = false;
+ //                return $q.reject(response);
+ //            },
+ //            'response': function (response) {
+ //                $scope.loading = false;
+ //                return response;
+ //            },
+ //            'request': function (config) {
+ //                $scope.loading = true;
+ //                return config;
+ //            },
+ //            'requestError': function (config) {
+ //                $scope.loading = false;
+ //                return $q.reject(config);
+ //            }
+ //        }
+ //        return httpInterceptor;
+ //    }])
+
+
+
+    app.controller("GHPCtrl", function ($scope, $location,$http) {
+              $scope.loading = false;
+	
+	 
+$scope.GetSelectUserCode = function () {
+            $http({
+                method: 'POST',
+                url: '/Home/GetSelectData',
+                data: { TableName: "Users", Where: "", FildName: "UserCode,RealName" }
+            }).then(function successCallback(response) {
+
+                if (response.data.start == 0) {
+
+                    $scope.UserCodeData = response.data.data;
+                } else {
+
+                }
+            }, function errorCallback(response) {
+                console.log(JSON.stringify(response))
+            });
+        }
+ $scope.GetSelectUserCode();
+
+   
+ 
+
+	    var Id="";
+	 if($location.url()!=""){
+	 Id=$location.url().split('#')[1].split("=")[1];
+	 }
+ 
+        $scope.load = function () {
+            $http({
+                method: 'POST',
+                url: 'GetUpdateData',
+                data: { Id: Id }
+           }).then(function successCallback(response) {
+                if (response.data.start == 0) {
+                    $scope.Update = response.data.data;
+							       $scope.UserCode = $scope.Update.UserCode;
+
+
+                } else {
+                    alert( response.data.msg);
+                }
+            }, function errorCallback(response){
+                // 请求失败执行代码
+           });
+
+        }
+
+        if (Id != "") {
+            $scope.load();
+			
+        }
+
+
+
+
+    })
+</script>
+ 

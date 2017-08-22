@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AllTableInfo.cs" />
+    <Compile Include="APPIndexTuiJian.cs" />
     <Compile Include="Areas.cs" />
     <Compile Include="Button.cs" />
     <Compile Include="B_CodeTable.cs" />
