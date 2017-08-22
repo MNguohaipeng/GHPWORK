@@ -206,6 +206,7 @@
     <Compile Include="Controllers\MenuButtonController.cs" />
     <Compile Include="Controllers\MenuController.cs" />
     <Compile Include="Controllers\PageUrlController.cs" />
+    <Compile Include="Controllers\PermissionTableController.cs" />
     <Compile Include="Controllers\ReleaseController.cs" />
     <Compile Include="Controllers\RoleController.cs" />
     <Compile Include="Controllers\RoleJurisdictionController.cs" />
@@ -487,6 +488,8 @@
     <Content Include="Views\DefaultTable\List.cshtml" />
     <Content Include="Views\APPIndexTuiJian\Add.cshtml" />
     <Content Include="Views\APPIndexTuiJian\List.cshtml" />
+    <Content Include="Views\PermissionTable\Add.cshtml" />
+    <Content Include="Views\PermissionTable\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

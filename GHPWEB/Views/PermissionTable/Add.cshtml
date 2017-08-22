@@ -11,56 +11,31 @@
 <section class="panel panel-default" ng-app="GHPAPP" ng-controller="GHPCtrl">
  
   <header class="panel-heading font-bold">
-                  PageUrl
+                  权限管理
                 </header>
 
 <div class="panel-body">
  
-  <form class="form-horizontal" method="POST" action="Save" id="PageUrlEditForm">    
+  <form class="form-horizontal" method="POST" action="Save" id="PermissionTableEditForm">    
   <input type="text" ng-hide="true" name="Id" ng-model="Update.Id"/>
-  <div class="line line-dashed b-b line-lg pull-in"></div>
-<div class="form-group">
-                      <label class="col-sm-2 control-label">页面名称</label>
-                      <div class="col-sm-10">
-                        <input type="text" name='PageName' class="form-control" ng-model="Update.PageName">
-                   
-                      </div>
-                    </div>
-<div class="line line-dashed b-b line-lg pull-in"></div>
-<div class="form-group">
-                      <label class="col-sm-2 control-label">实体类名</label>
-                      <div class="col-sm-10">
-                        <input type="text" name='EntityName' class="form-control" ng-model="Update.EntityName">
-                   
-                      </div>
-                    </div>
-<div class="line line-dashed b-b line-lg pull-in"></div>
-<div class="form-group">
-                      <label class="col-sm-2 control-label">Html地址</label>
-                      <div class="col-sm-10">
-                        <input type="text" name='HtmlUrl' class="form-control" ng-model="Update.HtmlUrl">
-                   
-                      </div>
-                    </div>
-<div class="line line-dashed b-b line-lg pull-in"></div>
-<div class="form-group">
-                      <label class="col-sm-2 control-label">Controller地址</label>
-                      <div class="col-sm-10">
-                        <input type="text" name='ControllerUrl' class="form-control" ng-model="Update.ControllerUrl">
-                   
-                      </div>
-                    </div>
-        <div class="line line-dashed b-b line-lg pull-in"></div>
-            <div class="form-group">
-                <label class="col-sm-2 control-label">是否启用用户编辑</label>
+  <div class="line line-dashed b-b line-lg pull-in"></div>   
+ <div class="form-group">
+                <label class="col-sm-2 control-label">权限字符串</label>
                 <div class="col-sm-10">
-
-                    <select name="IsUserEdit" class="form-control" ng-model="Update.IsUserEdit">
-                        <option value="true">是</option><option value="false">否</option>
-                    </select>
+              <input type="text" ng-hide="true"  name="PermissionCode" ng-model="Update.PermissionCode" />
+                    <select  class="form-control m-b"  ng-options="item.JurisdictionCode as item.ButtonId for  item in PermissionCodeData" ng-model="Update.PermissionCode">
+                      </select>
                 </div>
             </div>
-
+ 
+<div class="line line-dashed b-b line-lg pull-in"></div>
+<div class="form-group">
+                      <label class="col-sm-2 control-label">权限类型</label>
+                      <div class="col-sm-10">
+                        <input type="number" name='PermissionType' class="form-control" ng-model="Update.PermissionType">
+                   
+                      </div>
+                    </div>
 
   <div class="text-center">
   <button class="btn btn-s-md btn-default" type="submit">保存</button>
@@ -73,19 +48,7 @@
 </section>
 
 <script>
-$('#PageUrlEditForm').validate({rules: {PageName:{ 
-required:true,
-},
-EntityName:{ 
-required:true,
-},
-HtmlUrl:{ 
-required:true,
-},
-ControllerUrl:{ 
-required:true,
-},
-IsUserEdit:{ 
+$('#PermissionTableEditForm').validate({rules: {PermissionType:{ 
 required:true,
 },
 }   }); 
@@ -126,7 +89,27 @@ required:true,
     app.controller("GHPCtrl", function ($scope, $location,$http) {
               $scope.loading = false;
 	
-	   
+	 
+$scope.GetSelectPermissionCode = function () {
+            $http({
+                method: 'POST',
+                url: '/Home/GetSelectData',
+                data: { TableName: "MenuButton", Where: "", FildName: "JurisdictionCode,ButtonId" }
+            }).then(function successCallback(response) {
+
+                if (response.data.start == 0) {
+
+                    $scope.PermissionCodeData = response.data.data;
+                } else {
+
+                }
+            }, function errorCallback(response) {
+                console.log(JSON.stringify(response))
+            });
+        }
+ $scope.GetSelectPermissionCode();
+
+   
  
 
 	    var Id="";
@@ -142,7 +125,8 @@ required:true,
            }).then(function successCallback(response) {
                 if (response.data.start == 0) {
                     $scope.Update = response.data.data;
-							
+							       $scope.PermissionCode = $scope.Update.PermissionCode;
+
 
                 } else {
                     alert( response.data.msg);
