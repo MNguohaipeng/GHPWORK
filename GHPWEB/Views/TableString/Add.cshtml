@@ -39,7 +39,7 @@
                 <label class="col-sm-2 control-label">输入类型</label>
                 <div class="col-sm-10">
               <input type="text" ng-hide="true"  name="InputType" ng-model="Update.InputType" />
-                    <select  class="form-control m-b"  ng-options="item.YSName as item.YSName for  item in InputTypeData" ng-model="Update.InputType">
+                    <select  class="form-control m-b"  ng-options="item.YSName as item.YSNameZs for  item in InputTypeData" ng-model="Update.InputType">
                       </select>
                 </div>
             </div>
@@ -113,14 +113,16 @@
                     </select>
                 </div>
             </div>
-<div class="line line-dashed b-b line-lg pull-in"></div>
-<div class="form-group">
-                      <label class="col-sm-2 control-label">是否与其他字段联动</label>
-                      <div class="col-sm-10">
-                        <input type="text" name='IsOtherFieldLinkage' class="form-control" ng-model="Update.IsOtherFieldLinkage">
-                   
-                      </div>
-                    </div>
+        <div class="line line-dashed b-b line-lg pull-in"></div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">是否与其他字段联动</label>
+                <div class="col-sm-10">
+
+                    <select name="IsOtherFieldLinkage" class="form-control" ng-model="Update.IsOtherFieldLinkage">
+                        <option value="true">是</option><option value="false">否</option>
+                    </select>
+                </div>
+            </div>
 <div class="line line-dashed b-b line-lg pull-in"></div>
 <div class="form-group">
                       <label class="col-sm-2 control-label">其他字段名称</label>
@@ -163,6 +165,9 @@ required:true ,
 },
 FieldShowMing:{ 
 required:true ,
+},
+AddWhere:{ 
+required:false ,
 },
 IsOtherTable:{ 
 required:true,
@@ -225,7 +230,7 @@ $scope.GetSelectInputType = function () {
             $http({
                 method: 'POST',
                 url: '/Home/GetSelectData',
-                data: { TableName: "EditPage", Where: "", FildName: "YSName,YSName" }
+                data: { TableName: "EditPage", Where: "", FildName: "YSName,YSNameZs" }
             }).then(function successCallback(response) {
 
                 if (response.data.start == 0) {
@@ -321,7 +326,7 @@ $scope.GetSelectLinkageMode = function () {
        $scope.TableName = $scope.Update.TableName;
        $scope.LinkageMode = $scope.Update.LinkageMode;
 
-$scope.Default___Json1075=JSON.parse($scope.Update.IsDefaultData)
+
                 } else {
                     alert( response.data.msg);
                 }
