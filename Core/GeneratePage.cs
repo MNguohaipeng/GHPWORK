@@ -60,7 +60,7 @@ namespace Core
                     }
 
                 }
-                 catch (Exception ex)
+                catch (Exception ex)
                 {
                     throw;
                 }
@@ -173,68 +173,68 @@ namespace Core
                                         MrSelect += "       $scope." + item.FieldName + " = $scope.Update." + item.FieldName + ";\n";
 
 
-                                    break;
-                                case "7"://配置下拉默认值输入框
+                                        break;
+                                    case "7"://配置下拉默认值输入框
 
-                                    //获取对应的字段HTML
-                                    var ModeHtml = db.Queryable<Entity.EditPage>().Where(T => T.IsDeleted == false && T.YSName == item.InputType);
-                                    if (ModeHtml.Count() <= 0)
-                                        throw new Exception(@"没有查询到对用的输入类型：位置GeneratePage\AddHtml函数");
+                                        //获取对应的字段HTML
+                                        var ModeHtml = db.Queryable<Entity.EditPage>().Where(T => T.IsDeleted == false && T.YSName == item.InputType);
+                                        if (ModeHtml.Count() <= 0)
+                                            throw new Exception(@"没有查询到对用的输入类型：位置GeneratePage\AddHtml函数");
 
-                                    AddDefaultSelect = string.Format(ModeHtml.First().YSValue, item.FieldName, item.FieldShowMing);
+                                        AddDefaultSelect = string.Format(ModeHtml.First().YSValue, item.FieldName, item.FieldShowMing);
 
-                                    input += AddDefaultSelect;
+                                        input += AddDefaultSelect;
 
-                                    break;
-                                case "8":
-                                    var DefaultTextHtml = db.Queryable<Entity.EditPage>().Where(T => T.IsDeleted == false && T.YSName == item.InputType);
+                                        break;
+                                    case "8":
+                                        var DefaultTextHtml = db.Queryable<Entity.EditPage>().Where(T => T.IsDeleted == false && T.YSName == item.InputType);
 
-                                    if (DefaultTextHtml.Count() <= 0)
-                                        throw new Exception(@"没有查询DefaultSelectHtml：位置GeneratePage\AddHtml函数");
+                                        if (DefaultTextHtml.Count() <= 0)
+                                            throw new Exception(@"没有查询DefaultSelectHtml：位置GeneratePage\AddHtml函数");
 
-                                    if (string.IsNullOrEmpty(item.PageDefaultData))
-                                        throw new Exception("系统出错：默认值配置为空");
+                                        if (string.IsNullOrEmpty(item.PageDefaultData))
+                                            throw new Exception("系统出错：默认值配置为空");
 
-                                    DataTable DefaultTextTable = Common.JsonHelper.ToDataTable(item.PageDefaultData);
-                                    if (DefaultTextTable.Rows.Count <= 0)
-                                        throw new Exception("系统出错：默认值配置转换出错");
-
-
-
-                                    string DefaultText = "";
-
-                                    switch (DefaultTextTable.Rows[0]["Type"])
-                                    {
-                                        case "System":
-                                          DefaultText=SystemMoRenCanShu(DefaultTextTable);
-                                            break;
-                                        default:
-                                            break;
-                                    }
-
-
-                                    input += string.Format(DefaultTextHtml.First().YSValue, item.FieldShowMing, item.FieldName, DefaultText);
+                                        DataTable DefaultTextTable = Common.JsonHelper.ToDataTable(item.PageDefaultData);
+                                        if (DefaultTextTable.Rows.Count <= 0)
+                                            throw new Exception("系统出错：默认值配置转换出错");
 
 
 
+                                        string DefaultText = "";
 
-                                    break;
-                                case "9"://带默认值不链接库下拉
-                                    //获取对应的字段HTML
-                                    var DefaultSelectHtml = db.Queryable<Entity.EditPage>().Where(T => T.IsDeleted == false && T.YSName == item.InputType);
-                                    if (DefaultSelectHtml.Count() <= 0)
-                                        throw new Exception(@"没有查询DefaultSelectHtml：位置GeneratePage\AddHtml函数");
-                                    if (string.IsNullOrEmpty(item.PageDefaultData))
-                                        throw new Exception("系统出错：默认值配置为空");
-                                    DataTable table = Common.JsonHelper.ToDataTable(item.PageDefaultData);
-                                    string Option = "";
-                                    for (int i = 0; i < table.Rows.Count; i++)
-                                    {
-                                        Option += "<option value=\"" + table.Rows[i]["Value"] + "\">" + table.Rows[i]["Key"] + "</option>";
+                                        switch (DefaultTextTable.Rows[0]["Type"])
+                                        {
+                                            case "System":
+                                                DefaultText = SystemMoRenCanShu(DefaultTextTable);
+                                                break;
+                                            default:
+                                                break;
+                                        }
+
+
+                                        input += string.Format(DefaultTextHtml.First().YSValue, item.FieldShowMing, item.FieldName, DefaultText);
+
+
+
+
+                                        break;
+                                    case "9"://带默认值不链接库下拉
+                                             //获取对应的字段HTML
+                                        var DefaultSelectHtml = db.Queryable<Entity.EditPage>().Where(T => T.IsDeleted == false && T.YSName == item.InputType);
+                                        if (DefaultSelectHtml.Count() <= 0)
+                                            throw new Exception(@"没有查询DefaultSelectHtml：位置GeneratePage\AddHtml函数");
+                                        if (string.IsNullOrEmpty(item.PageDefaultData))
+                                            throw new Exception("系统出错：默认值配置为空");
+                                        DataTable table = Common.JsonHelper.ToDataTable(item.PageDefaultData);
+                                        string Option = "";
+                                        for (int i = 0; i < table.Rows.Count; i++)
+                                        {
+                                            Option += "<option value=\"" + table.Rows[i]["Value"] + "\">" + table.Rows[i]["Key"] + "</option>";
 
                                         }
 
-                                    AddDefaultSelect = string.Format(DefaultSelectHtml.First().YSValue, item.FieldName, item.FieldShowMing, Option);
+                                        AddDefaultSelect = string.Format(DefaultSelectHtml.First().YSValue, item.FieldName, item.FieldShowMing, Option);
 
                                         input += AddDefaultSelect;
 
@@ -242,9 +242,9 @@ namespace Core
 
                                         break;
 
-                                default:
-                                    input += string.Format(one.YSValue, item.FieldShowMing, item.FieldName);
-                                    break;
+                                    default:
+                                        input += string.Format(one.YSValue, item.FieldShowMing, item.FieldName);
+                                        break;
 
                                 }
                             }
@@ -285,9 +285,9 @@ namespace Core
 
                         }
 
-                    Script = Script.TrimEnd(',');
+                        Script = Script.TrimEnd(',');
 
-                    Script += "】   】);";
+                        Script += "】   】);";
 
 
 
@@ -303,7 +303,7 @@ namespace Core
 
 
 
-                    Script = string.Format(Script, Select + "  \n " + AddDefaultSelectScript, MrSelect + "\n" + DefaultSelectData);
+                        Script = string.Format(Script, Select + "  \n " + AddDefaultSelectScript, MrSelect + "\n" + DefaultSelectData);
 
                         string AddHtml = string.Format(cshtml, PageName, entityName + "EditForm", input, "", Script);
 
@@ -315,10 +315,14 @@ namespace Core
 
                         sw.Write(AddHtml);
 
+                    }
+                }
+                catch (Exception ex)
+                {
+
                 }
             }
         }
-
         /// <summary>
         /// 生成系统默认参数
         /// </summary>
