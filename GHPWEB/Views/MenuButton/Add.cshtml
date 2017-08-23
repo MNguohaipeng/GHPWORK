@@ -1,4 +1,4 @@
-ï»¿ 
+ 
   @{
  Layout = "~/Views/Shared/_Layout_Body.cshtml";
  }
@@ -20,7 +20,7 @@
   <input type="text" ng-hide="true" name="Id" ng-model="Update.Id"/>
   <div class="line line-dashed b-b line-lg pull-in"></div>   
  <div class="form-group">
-                <label class="col-sm-2 control-label">æŒ‰é’®ID</label>
+                <label class="col-sm-2 control-label">°´Å¥ID</label>
                 <div class="col-sm-10">
               <input type="text" ng-hide="true"  name="ButtonId" ng-model="Update.ButtonId" />
                     <select  class="form-control m-b"  ng-options="item.Id as item.ButtonName for  item in ButtonIdData" ng-model="Update.ButtonId">
@@ -29,7 +29,7 @@
             </div>
  <div class="line line-dashed b-b line-lg pull-in"></div>   
  <div class="form-group">
-                <label class="col-sm-2 control-label">èœå•ID</label>
+                <label class="col-sm-2 control-label">²Ëµ¥ID</label>
                 <div class="col-sm-10">
               <input type="text" ng-hide="true"  name="MenuId" ng-model="Update.MenuId" />
                     <select  class="form-control m-b"  ng-options="item.Id as item.MenuName for  item in MenuIdData" ng-model="Update.MenuId">
@@ -38,7 +38,7 @@
             </div>
          <div class="line line-dashed b-b line-lg pull-in"></div>
         <div class="form-group">
-            <label class="col-sm-2 control-label">æƒé™ä»£ç </label>
+            <label class="col-sm-2 control-label">È¨ÏŞ´úÂë</label>
             <div class="col-sm-10">
                 <i>{{Update.JurisdictionCode==null?Update.JurisdictionCode="0ba30047-0cca-4651-9c7a-015e5ab1ba52":""}}</i>
                 <input type="text" name='JurisdictionCode' class="form-control" ng-model="Update.JurisdictionCode" >
@@ -47,8 +47,8 @@
         </div>
 
   <div class="text-center">
-  <button class="btn btn-s-md btn-default" type="submit">ä¿å­˜</button>
-    <button class="btn btn-s-md btn-default" type="button" onclick="location='List'">å–æ¶ˆ</button>
+  <button class="btn btn-s-md btn-default" type="submit">±£´æ</button>
+    <button class="btn btn-s-md btn-default" type="button" onclick="location='List'">È¡Ïû</button>
   </div>
 
 </form>
@@ -168,7 +168,7 @@ $scope.GetSelectMenuId = function () {
                     alert( response.data.msg);
                 }
             }, function errorCallback(response){
-                // è¯·æ±‚å¤±è´¥æ‰§è¡Œä»£ç 
+                // ÇëÇóÊ§°ÜÖ´ĞĞ´úÂë
            });
 
         }

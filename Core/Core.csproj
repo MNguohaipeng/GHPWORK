@@ -30,8 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SqlSugar, Version=4.1.1.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\sqlSugar.4.1.1.2\lib\net40\SqlSugar.dll</HintPath>
+    <Reference Include="SqlSugar, Version=4.3.2.7, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\sqlSugar.4.3.2.7\lib\SqlSugar.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -53,15 +53,6 @@
     <Compile Include="RuntimeAbnormal.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Lib\MySql.Data.dll" />
-    <Content Include="Lib\Newtonsoft.Json.dll" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{b6ff7510-6585-428c-9228-83871f3365a4}</Project>
       <Name>Common</Name>
@@ -70,6 +61,9 @@
       <Project>{a7a90e7f-47f9-46e3-9de3-fc47b2b40169}</Project>
       <Name>Entity</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

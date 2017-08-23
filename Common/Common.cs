@@ -11,9 +11,10 @@ namespace Common
     public class Common
     {
 
-        public static object ConvertType(string Value,Type Type) {
-           
- 
+        public static object ConvertType(string Value, Type Type)
+        {
+
+
 
             object ReturnData = null;
             switch (Type.FullName)
@@ -37,7 +38,7 @@ namespace Common
                     ReturnData = SqlFunc.ToBool(Value);
                     break;
                 default:
-                    throw new Exception("不存在"+ Type.FullName+ "类型的转换函数，请联系开发人员");
+                    throw new Exception("不存在" + Type.FullName + "类型的转换函数，请联系开发人员");
             }
 
 
@@ -45,7 +46,8 @@ namespace Common
 
         }
 
-        public static string OutScript(string Type,string Message,string Url) {
+        public static string OutScript(string Type, string Message, string Url)
+        {
 
             string Script = "";
 
@@ -58,7 +60,7 @@ namespace Common
                     break;
                 case "AlertJump"://弹出后跳转
                     Script += "<script>";
-                    Script += "alert('"+Message+"');";
+                    Script += "alert('" + Message + "');";
                     Script += "location='" + Url + "'";
                     Script += "</script>";
                     break;
@@ -75,7 +77,8 @@ namespace Common
 
         }
 
-        public static int[] OutIntArreyForIds(string Ids) {
+        public static int[] OutIntArreyForIds(string Ids)
+        {
 
             string DataStr = Ids.Replace("[", "");
 
@@ -91,11 +94,33 @@ namespace Common
                 int Bl;
                 string im = rx.Matches(IdArrey[i])[0].Value;
 
-                if (int.TryParse(im, out Bl)) {
+                if (int.TryParse(im, out Bl))
+                {
                     IdsArrey[i] = Bl;
                 }
             }
             return IdsArrey;
+        }
+
+        /// <summary>
+        /// 生成随机数用户编号
+        /// </summary>
+        /// <returns></returns>
+        public static string OutUserCode()
+        {
+            try
+            {
+                Random Rd = new Random(Convert.ToInt32(DateTime.Now.ToString("fffffff")));
+
+                int Uc = Rd.Next(10000000, 99999999);
+                return Uc + "";
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
         }
 
  

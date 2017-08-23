@@ -82,5 +82,26 @@ namespace Common
 
         }
 
+        /// <summary>
+        /// 读取内存数据
+        /// </summary>
+        /// <returns></returns>
+        public static Dictionary<string, string> GetMemoryData()
+        {
+            string content = string.Empty;
+
+            MemoryStream ms = new MemoryStream(Encoding.GetEncoding("GB2312").GetBytes(content));//放入内存流，以便逐行读取
+
+            using (StreamReader sr = new StreamReader(ms))
+            {
+                while (sr.Peek() > -1)
+                {
+                    string xxx = sr.ReadLine();
+                }
+            }
+
+            return null;
+        }
+
     }
 }

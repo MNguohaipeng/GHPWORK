@@ -13,6 +13,7 @@ namespace GHPWEB
 
             // Web API 路由
             config.MapHttpAttributeRoutes();
+
             config.EnableCors(new EnableCorsAttribute("*", "*", "*"));
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",

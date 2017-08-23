@@ -1,4 +1,5 @@
 ﻿using Common;
+using Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,7 +62,7 @@ namespace GHPWEB.Areas.API.Controllers
                         break;
                 }
 
-                using (var db = Common.LinkDBHelper.CreateDB())
+                using (var db = LinkDBHelper.CreateDB())
                 {
 
                     string password = Password.ToMD5();
@@ -92,49 +93,115 @@ namespace GHPWEB.Areas.API.Controllers
         [HttpPost]
         public IHttpActionResult SignUp(dynamic obj)
         {
-            if (obj == null)
-            {
-                return Json(new { status = 3, message = "参数不能为空" });
-            }
+            
 
-
-            string PhoneNumber = Convert.ToString(obj.PhoneNumber);
-            string Password = Convert.ToString(obj.Password);
-            using (var db = Common.LinkDBHelper.CreateDB())
-            {
-
-                string password = Password.ToMD5();
-
-                Entity.Users users = new Entity.Users();
-                users.CreateTime = DateTime.Now;
-                users.LoginName = PhoneNumber;
-                users.Phone = PhoneNumber;
-                users.Password = password;
-                users.IsDeleted = false;
-                users.RealName = "待补充";
-                users.Email = "GD@GD.com";
-                var usercount = db.Queryable<Entity.Users>().Where(T => T.IsDeleted == false && T.LoginName == PhoneNumber || T.Phone == PhoneNumber).Count();
-
-
-
-                if (usercount > 0)
+            using (var db = LinkDBHelper.CreateDB())
+                try
                 {
-                    return Json(new { status = 0, message = "此手机号以绑定账号，请更换手机或找回密码" });
-                }
-                else
-                {
+                    if (obj == null)
+                    {
+                        return Json(new { status = 3, message = "参数不能为空" });
+                    }
+
+                    string LoginName = "";
+
+                    string ResourceType = "";
+
+                    if (ResourceType != null)
+                        ResourceType = obj.ResourceType;
+
+                    if (obj.LoginName == null)
+                        throw new RuntimeAbnormal("用户登录名不能为空");
+
+                    if (obj.Password == null)
+                        throw new RuntimeAbnormal("密码不能为空");
+
+                    LoginName = obj.LoginName + "";
+
+                    string Password = obj.Password + "";
+
+
+                    string password = Password.ToMD5();
+
+                    Entity.Users users = new Entity.Users();
+
+                    users.CreateTime = DateTime.Now;
+
+                    users.LoginName = LoginName;
+
+                    users.Password = password;
+
+                    users.IsDeleted = false;
+
+                    users.RealName = "待补充";
+
+                    users.UserCode = Common.Common.OutUserCode();
+
+                    int usercount = 0;
+
+                    switch (ResourceType)
+                    {
+                        case "0":
+
+                            if (!LoginName.IsValidPhone())
+                                throw new RuntimeAbnormal("手机号格式不正确");
+
+                            users.Phone = LoginName;
+
+                            usercount = db.Queryable<Entity.Users>().Where(T => T.IsDeleted == false && T.LoginName == LoginName || T.Phone == LoginName).Count();
+
+                            if (usercount > 0)
+                                throw new RuntimeAbnormal("此手机号已存在，请更换手机或找回密码。");
+
+
+                            break;
+                        case "1":
+
+                            if (!LoginName.IsValidEmail())
+                                throw new RuntimeAbnormal("Email格式不正确");
+
+                            users.Email = LoginName;
+
+                            usercount = db.Queryable<Entity.Users>().Where(T => T.IsDeleted == false && T.LoginName == LoginName || T.Email == LoginName).Count();
+
+                            if (usercount > 0)
+                                throw new RuntimeAbnormal("此邮箱已存在，请更换邮箱或找回密码");
+
+                            break;
+                        default:
+
+                            usercount = db.Queryable<Entity.Users>().Where(T => T.IsDeleted == false && T.LoginName == LoginName || T.LoginName == LoginName).Count();
+
+                            if (usercount > 0)
+                                throw new RuntimeAbnormal("此登陆名已存在，请更换或找回密码");
+
+                            break;
+                    }
+
                     int insertrows = db.Insertable<Entity.Users>(users).ExecuteCommand();
                     if (insertrows > 0)
                     {
-                        return Json(new { status = 1, message = "注册成功" });
+                        string Token = TokenHelper.GenerateToken(users.UserCode);
+                        users.Password = "";
+                        return Json(new { status = 1, message = "注册成功",data= users, Token= Token });
                     }
                     else
                     {
                         return Json(new { status = 2, message = "系统出错:受影响的行数小于等于0" });
                     }
+
+
+                }
+                catch (RuntimeAbnormal ex) {
+
+                    return Json(new { status = 0, message = ex.ErrorMessage });
+                }
+                catch (Exception)
+                {
+                    throw;
+
                 }
 
-            }
 
         }
 
@@ -150,12 +217,23 @@ namespace GHPWEB.Areas.API.Controllers
                 try
                 {
 
+                    if (obj != null)
+                    {
+                        if (obj.UserCode == null)
+                            throw new Exception("用户编号不能为空");
+
+                        if (obj.Password == null)
+                            throw new Exception("密码不能为空");
+
+
+                    }
                     string UserCode = obj.UserCode;
 
                     string password = obj.Password;
+
                     password = password.ToMD5();
 
-                    string Birthday = obj.Birthday;
+
 
 
 
@@ -166,14 +244,15 @@ namespace GHPWEB.Areas.API.Controllers
 
                     Entity.Users user = users[0];
 
-                    user.Gender = obj.Gender;
+                    if (obj.Gender != null)
+                        user.Gender = obj.Gender;
 
-                    if (!string.IsNullOrEmpty(Birthday))
+                    if (obj.Birthday != null)
                     {
 
                         DateTime BirthdayTime;
 
-                        if (!DateTime.TryParse(Birthday, out BirthdayTime))
+                        if (!DateTime.TryParse(obj.Birthday, out BirthdayTime))
                         {
 
                             throw new Exception("生日格式错误");
@@ -188,9 +267,11 @@ namespace GHPWEB.Areas.API.Controllers
 
                     }
 
-                    user.NickName = obj.NickName;
+                    if (obj.NickName != null)
+                        user.NickName = obj.NickName;
 
-                    user.HeadPortrait = obj.HeadPortrait;
+                    if (obj.HeadPortrait != null)
+                        user.HeadPortrait = obj.HeadPortrait;
 
                     var fanhui = db.Updateable<Entity.Users>(user).ExecuteCommand();
 
@@ -204,75 +285,41 @@ namespace GHPWEB.Areas.API.Controllers
         }
 
         /// <summary>
-        /// 获取首页数据
+        /// 获取用户信息
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
         [HttpPost]
-        public IHttpActionResult GetIndexData(dynamic obj)
+        public IHttpActionResult GetUserData(dynamic obj)
         {
             using (var db = LinkDBHelper.CreateDB())
                 try
                 {
-                    string AgeText = obj.Age;
+                    if (obj.UserCode == null)
+                        throw new Exception("用户编号不能为空");
 
-                    string PopularityCountText = obj.PopularityCount;
+                    if (obj.Password == null)
+                        throw new Exception("密码不能为空");
 
-                    string OnlineLocation = obj.OnlineLocation;
+                    string UserCode = obj.UserCode;
 
-                    string Gender = obj.Gender;
+                    string Password = obj.Password;
 
-                    int Age;
+                    Password = Password.ToMD5();
+                    var user = db.Queryable<Entity.Users>().Where(T => T.IsDeleted == false && T.Password == Password && T.UserCode == UserCode).ToList();
 
-                    int PopularityCount;
-
-                    if (!string.IsNullOrEmpty(AgeText))
-                    {
-                        if (!int.TryParse(AgeText, out Age))
-                        {
-                            throw new Exception("年龄格式错误");
-                        }
-                    }
-
-                    if (!string.IsNullOrEmpty(PopularityCountText))
-                    {
-                        if (!int.TryParse(PopularityCountText, out PopularityCount))
-                        {
-                            throw new Exception("人气格式错误");
-                        }
-                    }
-
-                    string Sql = "select LoginName,RealName,Phone,Email,Gender,Province,City,County,DetailedAddress,NickName,HeadPortrait,PopularityCount,Birthday,OnlineStatus,Gender from Users where 1=1 ";
-
-                    if (!string.IsNullOrEmpty(Gender))
-                    {
-                        Sql += " AND Gender='" + Gender+"'";
-                    }
-
-                    if (!string.IsNullOrEmpty(AgeText))
-                    {
-                        Sql += " AND Age <" + AgeText;
-                    }
-
-                    if (!string.IsNullOrEmpty(PopularityCountText))
-                    {
-                        Sql += " AND PopularityCount=" + PopularityCountText;
-                    }
-
-                    if (!string.IsNullOrEmpty(OnlineLocation))
-                    {
-                        Sql += " AND OnlineLocation=" + OnlineLocation;
-                    }
-
-                    var list = db.Ado.GetDataTable(Sql);
-
-                    return Json(new { status = 1, data = list, message = "距离没做筛选，待定算法" });
-
+                    if (user.Count <= 0)
+                        throw new Exception("用户名或密码错误");
+                    user[0].Password = "";
+                    return Json(new { status = 1, data = user[0] });
                 }
                 catch (Exception ex)
                 {
                     return Json(new { status = 0, message = ex.Message });
                 }
+
+
+
         }
     }
 }
