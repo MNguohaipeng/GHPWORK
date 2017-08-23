@@ -93,7 +93,7 @@ namespace GHPWEB.Areas.API.Controllers
         [HttpPost]
         public IHttpActionResult SignUp(dynamic obj)
         {
-            
+
 
             using (var db = LinkDBHelper.CreateDB())
                 try
@@ -120,7 +120,6 @@ namespace GHPWEB.Areas.API.Controllers
 
                     string Password = obj.Password + "";
 
-
                     string password = Password.ToMD5();
 
                     Entity.Users users = new Entity.Users();
@@ -128,6 +127,12 @@ namespace GHPWEB.Areas.API.Controllers
                     users.CreateTime = DateTime.Now;
 
                     users.LoginName = LoginName;
+
+                    users.Birthday = DateTime.Now;
+
+                    users.Age = 1;
+
+                    users.Gender = "男";
 
                     users.Password = password;
 
@@ -183,7 +188,7 @@ namespace GHPWEB.Areas.API.Controllers
                     {
                         string Token = TokenHelper.GenerateToken(users.UserCode);
                         users.Password = "";
-                        return Json(new { status = 1, message = "注册成功",data= users, Token= Token });
+                        return Json(new { status = 1, message = "注册成功", data = users, Token = Token });
                     }
                     else
                     {
@@ -192,7 +197,8 @@ namespace GHPWEB.Areas.API.Controllers
 
 
                 }
-                catch (RuntimeAbnormal ex) {
+                catch (RuntimeAbnormal ex)
+                {
 
                     return Json(new { status = 0, message = ex.ErrorMessage });
                 }
@@ -219,28 +225,31 @@ namespace GHPWEB.Areas.API.Controllers
 
                     if (obj != null)
                     {
-                        if (obj.UserCode == null)
-                            throw new Exception("用户编号不能为空");
-
-                        if (obj.Password == null)
-                            throw new Exception("密码不能为空");
-
+                        if (obj.ToKen == null)
+                            throw new RuntimeAbnormal("ToKen不能为空");
+ 
 
                     }
-                    string UserCode = obj.UserCode;
 
-                    string password = obj.Password;
-
-                    password = password.ToMD5();
+                    //获取缓存数据
+                    var  CacheData = CacheHelper.GetCache("UsersToKen"+ obj.ToKen);
 
 
+                    if (CacheData==null)
+                        throw new RuntimeAbnormal("ToKen已失效");
 
+                    string UserCode = "";
 
+                    foreach (var item in CacheData)
+                    {
+                        if (item.Key == "UserCode")
+                            UserCode = item.Value;
+                    }
 
-                    var users = db.Queryable<Entity.Users>().Where(T => T.IsDeleted == false && T.UserCode == UserCode && T.Password == password).ToList();
+                    var users = db.Queryable<Entity.Users>().Where(T => T.IsDeleted == false && T.UserCode == UserCode).ToList();
 
                     if (users.Count <= 0)
-                        throw new Exception("没有查询到对应数据，无法进行用户信息的修改");
+                        throw new RuntimeAbnormal("没有查询到对应数据，无法进行用户信息的修改");
 
                     Entity.Users user = users[0];
 
@@ -255,12 +264,18 @@ namespace GHPWEB.Areas.API.Controllers
                         if (!DateTime.TryParse(obj.Birthday, out BirthdayTime))
                         {
 
-                            throw new Exception("生日格式错误");
+                            throw new RuntimeAbnormal("生日格式错误");
 
                         }
                         else
                         {
+ 
+                            var years = ((DateTime.Now - BirthdayTime).Days) / 365;
 
+                            if (years <= 0)
+                                years++;
+
+                            user.Age = years;
                             user.Birthday = BirthdayTime;
 
                         }
@@ -277,9 +292,13 @@ namespace GHPWEB.Areas.API.Controllers
 
                     return Json(new { status = 1, message = "修改成功" });
                 }
+                catch (RuntimeAbnormal ex)
+                {
+                    return Json(new { status = 0, message = ex.ErrorMessage });
+                }
                 catch (Exception ex)
                 {
-                    return Json(new { status = 0, message = ex.Message });
+                    throw;
                 }
 
         }
@@ -295,27 +314,37 @@ namespace GHPWEB.Areas.API.Controllers
             using (var db = LinkDBHelper.CreateDB())
                 try
                 {
-                    if (obj.UserCode == null)
-                        throw new Exception("用户编号不能为空");
+                    if (obj.ToKen == null)
+                        throw new RuntimeAbnormal("ToKen不能为空");
 
-                    if (obj.Password == null)
-                        throw new Exception("密码不能为空");
+                    //获取缓存数据
+                    var CacheData = CacheHelper.GetCache("UsersToKen" + obj.ToKen);
 
-                    string UserCode = obj.UserCode;
 
-                    string Password = obj.Password;
+                    if (CacheData == null)
+                        throw new RuntimeAbnormal("ToKen已失效");
 
-                    Password = Password.ToMD5();
-                    var user = db.Queryable<Entity.Users>().Where(T => T.IsDeleted == false && T.Password == Password && T.UserCode == UserCode).ToList();
+                    string UserCode = "";
+
+                    foreach (var item in CacheData)
+                    {
+                        if (item.Key == "UserCode")
+                            UserCode = item.Value;
+                    }
+
+                    var user = db.Queryable<Entity.Users>().Where(T => T.IsDeleted == false && T.UserCode == UserCode).ToList();
 
                     if (user.Count <= 0)
-                        throw new Exception("用户名或密码错误");
+                        throw new RuntimeAbnormal("用户名或密码错误");
                     user[0].Password = "";
                     return Json(new { status = 1, data = user[0] });
                 }
+                catch (RuntimeAbnormal ex) {
+                    return Json(new { status = 0, message = ex.ErrorMessage });
+                }
                 catch (Exception ex)
                 {
-                    return Json(new { status = 0, message = ex.Message });
+                    throw;
                 }
 
 

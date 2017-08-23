@@ -23,38 +23,36 @@ namespace GHPWEB.Areas.API.Controllers
             try
             {
                 string PhoneNumber = "";
- 
+
                 if (obj.PhoneNumber == null)
                     throw new RuntimeAbnormal("手机号码不能为空");
- 
+
                 PhoneNumber = obj.PhoneNumber;
 
                 if (!PhoneNumber.IsValidPhone())
                     throw new RuntimeAbnormal("手机号码格式不正确");
- 
+
                 string POSTURL = ConfigurationManager.ConnectionStrings["ShortMessage"].ToString();
 
                 string ShortMessageCode = "";
 
                 string ShortMessageIndex = "";
 
-                foreach (var item in Code())
+                foreach (var item in Code(PhoneNumber))
                 {
-                    if (item.Key.Contains("SMCode"))
+                    if (item.Key.Contains("Code"))
                         ShortMessageCode = item.Value;
 
-                    if (item.Key.Contains("Index"))
-                        ShortMessageIndex = item.Value;
                 }
 
-                string PostData = "{\"templateSMS\":{\"appId\":\"67b37b86266b44afa04672cb451621bb\",\"param\":\""+ ShortMessageCode + "\",\"templateId\":\"" + ConfigurationManager.ConnectionStrings["templateId"].ToString() + "\",\"to\":\"" + PhoneNumber + "\"}}";
+                string PostData = "{\"templateSMS\":{\"appId\":\"67b37b86266b44afa04672cb451621bb\",\"param\":\"" + ShortMessageCode + "\",\"templateId\":\"" + ConfigurationManager.ConnectionStrings["templateId"].ToString() + "\",\"to\":\"" + PhoneNumber + "\"}}";
 
                 string SigParameter = ConfigurationManager.ConnectionStrings["AccountSid"].ToString() + ConfigurationManager.ConnectionStrings["AuthToken"].ToString() + DateTime.Now.ToString("yyyyMMddHHmmss");
 
                 byte[] bytes = Encoding.Default.GetBytes(ConfigurationManager.ConnectionStrings["AccountSid"].ToString() + ":" + DateTime.Now.ToString("yyyyMMddHHmmss"));
 
                 string Authorization = Convert.ToBase64String(bytes);
- 
+
                 SigParameter = SigParameter.ToMD5().ToUpper();
 
                 POSTURL = string.Format(POSTURL, SigParameter, Authorization);
@@ -77,13 +75,13 @@ namespace GHPWEB.Areas.API.Controllers
                 myHttpWebRequest.ContentType = "application/json;charset=utf-8";
 
                 myHttpWebRequest.ContentLength = byte1.Length;
-              
+
                 Stream newStream = myHttpWebRequest.GetRequestStream();
- 
+
                 newStream.Write(byte1, 0, byte1.Length);
 
                 newStream.Close();
- 
+
                 //发送成功后接收返回的XML信息
                 HttpWebResponse response = (HttpWebResponse)myHttpWebRequest.GetResponse();
 
@@ -97,10 +95,11 @@ namespace GHPWEB.Areas.API.Controllers
 
                 lcHtml = streamReader.ReadToEnd();
 
-                return Json(new { status = 1, Index= ShortMessageIndex });
+                return Json(new { status = 1, message = "发送成功" });
 
             }
-            catch (RuntimeAbnormal ex) {
+            catch (RuntimeAbnormal ex)
+            {
 
                 return Json(new { status = 0, message = ex.Message });
 
@@ -109,6 +108,7 @@ namespace GHPWEB.Areas.API.Controllers
             {
 
                 throw;
+
             }
         }
 
@@ -117,31 +117,99 @@ namespace GHPWEB.Areas.API.Controllers
         /// 生成验证码
         /// </summary>
         /// <returns></returns>
-        public Dictionary<string, string> Code() {
+        public Dictionary<string, string> Code(string PhoneNumber)
+        {
             try
             {
+
                 Random Ra = new Random(DateTime.Now.ToString("fffffff").ToInt());
-               int Code=Ra.Next(100000,999999);
+
+                int Code = Ra.Next(100000, 999999);
+
                 Dictionary<string, string> dc = new Dictionary<string, string>();
 
                 string Index = Guid.NewGuid().ToString();
 
-                dc.Add("SMCode"+ Index, Code+"");
+                dc.Add("Code", Code + "");
+
+                dc.Add("Time", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
  
-                dc.Add("SMTime"+ Index, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-
-                dc.Add("Index", Index);
-
-                TokenHelper.WriteInMemory(dc);
+                //写入缓存   10分钟过期
+                Core.CacheHelper.SetCache("ShortMessage" + PhoneNumber, dc,600);
 
                 return dc;
+
             }
+
             catch (Exception)
             {
 
                 throw;
             }
 
+        }
+
+
+        /// <summary>
+        /// 对比
+        /// </summary>
+        /// <returns></returns>
+       [HttpPost]
+        public IHttpActionResult Contrast(dynamic obj)
+        {
+            try
+            {
+                if (obj.PhoneNumber == null)
+                    throw new Exception("手机号码不能为空");
+
+                if (obj.Code == null)
+                    throw new Exception("验证码不能为空");
+
+                Dictionary<string, string> code = Core.CacheHelper.GetCache("ShortMessage" + obj.PhoneNumber);
+                if (code != null)
+                {
+                    string Code = "";
+
+                    foreach (var item in code)
+                    {
+                        if (item.Key == "Code")
+                            Code = item.Value;
+                     
+                    }
+
+                    if (obj.Code+"" != Code)
+                        throw new RuntimeAbnormal("验证码不正确");
+ 
+                }
+                else {
+                    throw new RuntimeAbnormal("验证码以过期");
+                }
+                //移除缓存
+                Core.CacheHelper.RemoveAllCache("ShortMessage"+ obj.PhoneNumber);
+
+                return Json(new { status = 1, message = "验证成功" });
+ 
+            }
+            catch (RuntimeAbnormal ex)
+            {
+
+                return Json(new
+                {
+                    status = 0,
+                    message = ex.Message
+                });
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public void GetMemoryData(string PhoneNumber)
+        {
+
+            var xxxx = Core.CacheHelper.GetCache("ShortMessage" + PhoneNumber);
         }
 
 
