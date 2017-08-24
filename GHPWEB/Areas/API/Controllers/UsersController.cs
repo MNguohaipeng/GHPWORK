@@ -70,7 +70,7 @@ namespace GHPWEB.Areas.API.Controllers
 
                     if (user != null)
                     {
-                        string Token = TokenHelper.GenerateToken(user.UserCode);
+                        string Token = TokenHelper.GenerateToken(user.UserCode, LoginName);
                         return Json(new { status = 1, data = user, Token = Token });
                     }
                     else
@@ -186,7 +186,7 @@ namespace GHPWEB.Areas.API.Controllers
                     int insertrows = db.Insertable<Entity.Users>(users).ExecuteCommand();
                     if (insertrows > 0)
                     {
-                        string Token = TokenHelper.GenerateToken(users.UserCode);
+                        string Token = TokenHelper.GenerateToken(users.UserCode, LoginName);
                         users.Password = "";
                         return Json(new { status = 1, message = "注册成功", data = users, Token = Token });
                     }
@@ -222,20 +222,20 @@ namespace GHPWEB.Areas.API.Controllers
             using (var db = LinkDBHelper.CreateDB())
                 try
                 {
+                    if (obj == null)
+                        throw new RuntimeAbnormal("参数不能为空");
 
-                    if (obj != null)
-                    {
-                        if (obj.ToKen == null)
-                            throw new RuntimeAbnormal("ToKen不能为空");
- 
 
-                    }
+                    if (obj.ToKen == null)
+                        throw new RuntimeAbnormal("ToKen不能为空");
+
+
 
                     //获取缓存数据
-                    var  CacheData = CacheHelper.GetCache("UsersToKen"+ obj.ToKen);
+                    var CacheData = TokenHelper.GetToKenGlData(obj.ToKen);
 
 
-                    if (CacheData==null)
+                    if (CacheData == null)
                         throw new RuntimeAbnormal("ToKen已失效");
 
                     string UserCode = "";
@@ -269,7 +269,7 @@ namespace GHPWEB.Areas.API.Controllers
                         }
                         else
                         {
- 
+
                             var years = ((DateTime.Now - BirthdayTime).Days) / 365;
 
                             if (years <= 0)
@@ -317,19 +317,18 @@ namespace GHPWEB.Areas.API.Controllers
                     if (obj.ToKen == null)
                         throw new RuntimeAbnormal("ToKen不能为空");
 
-                    //获取缓存数据
-                    var CacheData = CacheHelper.GetCache("UsersToKen" + obj.ToKen);
-
-
-                    if (CacheData == null)
-                        throw new RuntimeAbnormal("ToKen已失效");
-
                     string UserCode = "";
 
-                    foreach (var item in CacheData)
+                    string ToKen = obj.ToKen;
+
+                    Dictionary<string, string> HcData = TokenHelper.GetToKenGlData(ToKen);
+
+                    foreach (var items in HcData)
                     {
-                        if (item.Key == "UserCode")
-                            UserCode = item.Value;
+
+                        if (items.Key == "UserCode")
+                            UserCode = items.Value;
+
                     }
 
                     var user = db.Queryable<Entity.Users>().Where(T => T.IsDeleted == false && T.UserCode == UserCode).ToList();
@@ -339,7 +338,8 @@ namespace GHPWEB.Areas.API.Controllers
                     user[0].Password = "";
                     return Json(new { status = 1, data = user[0] });
                 }
-                catch (RuntimeAbnormal ex) {
+                catch (RuntimeAbnormal ex)
+                {
                     return Json(new { status = 0, message = ex.ErrorMessage });
                 }
                 catch (Exception ex)
@@ -347,8 +347,164 @@ namespace GHPWEB.Areas.API.Controllers
                     throw;
                 }
 
+        }
 
+
+        [HttpPost]
+        public IHttpActionResult UpdatePassword(dynamic obj)
+        {
+            try
+            {
+
+
+                if (obj == null)
+                    throw new RuntimeAbnormal("参数不能为空");
+
+                if (obj.ToKen == null)
+                    throw new RuntimeAbnormal("ToKen不能为空");
+
+                if (obj.Password == null)
+                    throw new RuntimeAbnormal("新密码不能为空");
+
+                string ToKen = obj.ToKen;
+
+                //获取缓存数据
+                var CacheData = TokenHelper.GetToKenGlData(ToKen);
+
+                if (CacheData == null)
+                    throw new RuntimeAbnormal("ToKen已失效");
+
+                string UserCode = "";
+
+                string Password = obj.Password;
+
+                foreach (var item in CacheData)
+                {
+                    if (item.Key == "UserCode")
+                        UserCode = item.Value;
+                }
+
+                UpdatePassword(UserCode, Password);
+                return Json(new { status = 1, message = "修改成功" });
+            }
+            catch (RuntimeAbnormal ex)
+            {
+                return Json(new { status = 0, message = ex.ErrorMessage });
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 修改密码
+        /// </summary>
+        /// <param name="UserCode"></param>
+        /// <param name="Password">新密码</param>
+        [NonAction]
+        public bool UpdatePassword(string UserCode, string Password)
+        {
+            using (var db = LinkDBHelper.CreateDB())
+                try
+                {
+
+
+                    var Users = db.Queryable<Entity.Users>().Where(T => T.IsDeleted == false && T.UserCode == UserCode).ToList();
+
+                    if (Users.Count <= 0)
+                        throw new RuntimeAbnormal("没有查询到对应用户");
+                    var User = Users[0];
+
+                    User.Password = Password.ToMD5();
+
+                    int count = db.Updateable<Entity.Users>(User).ExecuteCommand();
+
+                    if (count <= 0)
+                        throw new RuntimeAbnormal("系统出错，受影响的行数小于等于0");
+
+                    return true;
+
+                }
+                catch (RuntimeAbnormal ex)
+                {
+                    throw;
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
 
         }
+
+
+        /// <summary>
+        /// 验证账号
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public IHttpActionResult VerifyAccount(dynamic obj)
+        {
+            using (var db = LinkDBHelper.CreateDB())
+                try
+                {
+
+                    string LoginName = "";
+
+                    string ResourceType = "";
+
+                    if (obj == null)
+                        throw new RuntimeAbnormal("参数不能为空");
+
+                    if (obj.LoginName == null)
+                        throw new RuntimeAbnormal("登录名不能为空");
+
+                    if (obj.ResourceType != null)
+                        ResourceType = obj.ResourceType;
+
+                    LoginName = obj.LoginName;
+
+                    int Count = 0;
+
+                    switch (ResourceType)
+                    {
+                        case "0":
+                            if (!LoginName.IsValidPhone())
+                                throw new RuntimeAbnormal("手机号格式不正确");
+
+                            Count = db.Queryable<Entity.Users>().Where(T => T.IsDeleted == false && T.Phone == LoginName).Count();
+
+                            break;
+                        case "1":
+                            if (!LoginName.IsValidEmail())
+                                throw new RuntimeAbnormal("邮箱格式不正确");
+
+                            Count = db.Queryable<Entity.Users>().Where(T => T.IsDeleted == false && T.Email == LoginName).Count();
+                            break;
+                        default:
+                            Count = db.Queryable<Entity.Users>().Where(T => T.IsDeleted == false && T.LoginName == LoginName).Count();
+                            break;
+                    }
+
+                    if (Count > 0)
+                        throw new RuntimeAbnormal("此账号已存在");
+
+                    return Json(new { status = 1, message = "验证成功" });
+
+                }
+                catch (RuntimeAbnormal ex) {
+
+                    return Json(new { status = 0, message = ex.ErrorMessage });
+
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+        }
+
     }
 }

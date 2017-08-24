@@ -24,6 +24,9 @@ namespace GHPWEB.Areas.API.Controllers
             {
                 string PhoneNumber = "";
 
+                if (obj == null)
+                    throw new RuntimeAbnormal("参数不能为空");
+
                 if (obj.PhoneNumber == null)
                     throw new RuntimeAbnormal("手机号码不能为空");
 
@@ -159,6 +162,9 @@ namespace GHPWEB.Areas.API.Controllers
         {
             try
             {
+                if (obj == null)
+                    throw new RuntimeAbnormal("参数不能为空");
+
                 if (obj.PhoneNumber == null)
                     throw new Exception("手机号码不能为空");
 
@@ -196,7 +202,7 @@ namespace GHPWEB.Areas.API.Controllers
                 return Json(new
                 {
                     status = 0,
-                    message = ex.Message
+                    message = ex.ErrorMessage
                 });
             }
             catch (Exception)
@@ -206,10 +212,39 @@ namespace GHPWEB.Areas.API.Controllers
             }
         }
 
-        public void GetMemoryData(string PhoneNumber)
-        {
 
-            var xxxx = Core.CacheHelper.GetCache("ShortMessage" + PhoneNumber);
+        [HttpPost]
+        public IHttpActionResult GetValidationCode(dynamic obj)
+        {
+            try
+            {
+                if (obj == null)
+                    throw new RuntimeAbnormal("参数不能为空");
+
+                if (obj.PhoneNumber == null)
+                    throw new RuntimeAbnormal("手机号码不能为空");
+
+                var data = Core.CacheHelper.GetCache("ShortMessage" + obj.PhoneNumber);
+
+                if (data == null)
+                    throw new RuntimeAbnormal("验证码以过期");
+
+
+
+
+                return Json(new { status = 1, data = data });
+            }
+            catch (RuntimeAbnormal ex)
+            {
+                return Json(new { status = 0, data = ex.ErrorMessage });
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+
         }
 
 
