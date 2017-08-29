@@ -68,29 +68,27 @@ namespace Core
             try
             {
 
+                var xxxx = CacheHelper.GetCache("LoginName" + ToKen);
 
                 //获取缓存数据
                 var CacheLoginNameData = CacheHelper.GetCache("LoginName" + ToKen) ?? throw new RuntimeAbnormal("ToKen已失效"); ;
-
-
-
-
+ 
                 Dictionary<string, string> LoginData = new Dictionary<string, string>();
+
                 LoginData = (Dictionary<string, string>)CacheLoginNameData;
 
                 string LoginName = "";
 
                 foreach (var item in LoginData)
                 {
+
                     if (item.Key == "LoginName")
                         LoginName = item.Value;
+
                 }
 
                 var CacheData = CacheHelper.GetCache(LoginName) ?? throw new RuntimeAbnormal("ToKen已失效");
-
-
-
-
+ 
                 Dictionary<string, string> HcData = (Dictionary<string, string>)CacheData;
 
                 return HcData;

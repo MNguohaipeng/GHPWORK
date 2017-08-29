@@ -11,31 +11,30 @@
 <section class="panel panel-default" ng-app="GHPAPP" ng-controller="GHPCtrl">
  
   <header class="panel-heading font-bold">
-                  APP推荐管理
+                  权限组
                 </header>
 
 <div class="panel-body">
  
-  <form class="form-horizontal" method="POST" action="Save" id="APPIndexTuiJianEditForm">    
+  <form class="form-horizontal" method="POST" action="Save" id="PermissionGroupEditForm">    
   <input type="text" ng-hide="true" name="Id" ng-model="Update.Id"/>
-  <div class="line line-dashed b-b line-lg pull-in"></div>   
- <div class="form-group">
-                <label class="col-sm-2 control-label">用户编号</label>
-                <div class="col-sm-10">
-              <input type="text" ng-hide="true"  name="UserCode" ng-model="Update.UserCode" />
-                    <select  class="form-control m-b"  ng-options="item.UserCode as item.RealName for  item in UserCodeData" ng-model="Update.UserCode">
-                      </select>
-                </div>
-            </div>
- 
-<div class="line line-dashed b-b line-lg pull-in"></div>
+  <div class="line line-dashed b-b line-lg pull-in"></div>
 <div class="form-group">
-                      <label class="col-sm-2 control-label">顺序编号</label>
+                      <label class="col-sm-2 control-label">组名称</label>
                       <div class="col-sm-10">
-                        <input type="number" name='Index' class="form-control" ng-model="Update.Index">
+                        <input type="text" name='GroupName' class="form-control" ng-model="Update.GroupName">
                    
                       </div>
                     </div>
+<div class="line line-dashed b-b line-lg pull-in"></div>
+<div class="form-group">
+                      <label class="col-sm-2 control-label">备注</label>
+                      <div class="col-sm-10">
+                        <input type="text" name='Note' class="form-control" ng-model="Update.Note">
+                   
+                      </div>
+                    </div>
+
 
   <div class="text-center">
   <button class="btn btn-s-md btn-default" type="submit">保存</button>
@@ -48,7 +47,10 @@
 </section>
 
 <script>
-$('#APPIndexTuiJianEditForm').validate({rules: {}   }); 
+$('#PermissionGroupEditForm').validate({rules: {GroupName:{ 
+required:true,
+},
+}   }); 
  
  
  
@@ -86,27 +88,7 @@ $('#APPIndexTuiJianEditForm').validate({rules: {}   });
     app.controller("GHPCtrl", function ($scope, $location,$http) {
               $scope.loading = false;
 	
-	 
-$scope.GetSelectUserCode = function () {
-            $http({
-                method: 'POST',
-                url: '/Home/GetSelectData',
-                data: { TableName: "Users", Where: "", FildName: "UserCode,RealName" }
-            }).then(function successCallback(response) {
-
-                if (response.data.start == 0) {
-
-                    $scope.UserCodeData = response.data.data;
-                } else {
-
-                }
-            }, function errorCallback(response) {
-                console.log(JSON.stringify(response))
-            });
-        }
- $scope.GetSelectUserCode();
-
-   
+	   
  
 
 	    var Id="";
@@ -122,8 +104,7 @@ $scope.GetSelectUserCode = function () {
            }).then(function successCallback(response) {
                 if (response.data.start == 0) {
                     $scope.Update = response.data.data;
-							       $scope.UserCode = $scope.Update.UserCode;
-
+							
 
                 } else {
                     alert( response.data.msg);

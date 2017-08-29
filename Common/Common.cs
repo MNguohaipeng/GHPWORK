@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using SqlSugar;
 using System.Text.RegularExpressions;
+using System.IO;
+using System.Web;
 
 namespace Common
 {
@@ -123,7 +125,45 @@ namespace Common
 
         }
 
- 
+
+        /// <summary>
+        /// 上传文件 
+        /// </summary>
+        /// <param name="FormFile">文件</param>
+        /// <param name="Url">路径</param>
+        /// <param name="FileName">文件名称</param>
+        /// <param name="_FileExtension">文件允许类型</param>
+        /// <returns></returns>
+        public static bool UpLoadFile(HttpPostedFileBase formFile, string Url, string FileName)
+        {
+
+            try
+            {
+                HttpPostedFileBase postedFile = formFile;
+                if (postedFile == null)
+                {
+                    return false;
+                }
+
+                #region 判断路径是否存在
+                if (Directory.Exists(System.Web.HttpContext.Current.Server.MapPath(Url)) == false)
+                {
+                    Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath(Url));
+                }
+                #endregion
+                #region Save
+                postedFile.SaveAs(System.Web.HttpContext.Current.Server.MapPath(Url + FileName));
+                #endregion
+
+                return true;
+            }
+
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
 
     }
 }

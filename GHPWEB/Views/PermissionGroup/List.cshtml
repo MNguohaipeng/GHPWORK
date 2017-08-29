@@ -12,7 +12,7 @@
 
 <section class="panel panel-default" ng-app="GHPAPP" ng-controller="GHPCtrl">
   <header class="panel-heading font-bold">
-                  APPIndexTuiJian
+                  PermissionGroup
   </header>
 
     <div id="GHPTABLE">
@@ -82,7 +82,7 @@
  
  
 	var tableoption = {
-        thead: [{name:'',value:'Id',IsChack:true,},{name:'用户编号',value:'UserCode',IsOrder:false,},{name:'顺序编号',value:'Index',IsOrder:false,}],
+        thead: [{name:'',value:'Id',IsChack:true,},{name:'组名称',value:'GroupName',IsOrder:false,},{name:'备注',value:'Note',IsOrder:false,}],
         tableid: "table"
     }
     var pages = 0;
@@ -118,7 +118,7 @@
             $http({
                 method: 'POST',
                 url: 'GetButton',
-                data: { MenuName: "APPIndexTuiJian" }
+                data: { MenuName: "PermissionGroup" }
             }).then(function successCallback(response) {
                 if (response.data.start == 1) {
 

@@ -340,6 +340,11 @@ namespace Core
                         break;
 
                     case "Time":
+
+
+
+
+
                         rtData = DateTime.Now.ToString("HH:mm:ss");
                         break;
 

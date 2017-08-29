@@ -2,9 +2,11 @@
 using Core;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 
 namespace GHPWEB.Areas.API.Controllers
@@ -217,34 +219,49 @@ namespace GHPWEB.Areas.API.Controllers
         /// <param name="obj"></param>
         /// <returns></returns>
         [HttpPost]
-        public IHttpActionResult UpdateUserData(dynamic obj)
+        public IHttpActionResult UpdateUserData()
         {
+
+ 
+            HttpContextBase context = (HttpContextBase)Request.Properties["MS_HttpContext"];//获取传统context
+
+            HttpRequestBase request = context.Request;//定义传统request对象
+
+
             using (var db = LinkDBHelper.CreateDB())
                 try
                 {
-                    if (obj == null)
+                    if (request == null)
                         throw new RuntimeAbnormal("参数不能为空");
+ 
 
-
-                    if (obj.ToKen == null)
+                    if (request.Form["ToKen"] == null)
                         throw new RuntimeAbnormal("ToKen不能为空");
 
-
+                    string ToKen = request.Form["ToKen"];
 
                     //获取缓存数据
-                    var CacheData = TokenHelper.GetToKenGlData(obj.ToKen);
+                    var CacheData = TokenHelper.GetToKenGlData(ToKen);
 
-
+                //    return Json(new { status = 1, message = "测试信息", data = CacheData });
                     if (CacheData == null)
                         throw new RuntimeAbnormal("ToKen已失效");
 
                     string UserCode = "";
 
+                    string CacheToKen = "";
+
                     foreach (var item in CacheData)
                     {
                         if (item.Key == "UserCode")
                             UserCode = item.Value;
+
+                        if (item.Key == "Token")
+                            CacheToKen = item.Value;
                     }
+
+                    if (CacheToKen != ToKen)
+                        throw new RuntimeAbnormal("ToKen已失效,传入的Token为:"+ ToKen);
 
                     var users = db.Queryable<Entity.Users>().Where(T => T.IsDeleted == false && T.UserCode == UserCode).ToList();
 
@@ -252,16 +269,18 @@ namespace GHPWEB.Areas.API.Controllers
                         throw new RuntimeAbnormal("没有查询到对应数据，无法进行用户信息的修改");
 
                     Entity.Users user = users[0];
-
-                    if (obj.Gender != null)
-                        user.Gender = obj.Gender;
-
-                    if (obj.Birthday != null)
+                    
+                    if (request.Form["Gender"] != null)
+                        user.Gender = request.Form["Gender"];
+                   
+                    if (request.Form["Birthday"] != null)
                     {
 
-                        DateTime BirthdayTime;
+                        DateTime BirthdayTime=DateTime.Now;
+                       
+                        string BirthdayText = request.Form["Birthday"];
 
-                        if (!DateTime.TryParse(obj.Birthday, out BirthdayTime))
+                        if (!DateTime.TryParse(BirthdayText, out BirthdayTime))
                         {
 
                             throw new RuntimeAbnormal("生日格式错误");
@@ -281,16 +300,33 @@ namespace GHPWEB.Areas.API.Controllers
                         }
 
                     }
+                    
+                    if (request.Form["NickName"] != null)
+                        user.NickName = request.Form["NickName"];
 
-                    if (obj.NickName != null)
-                        user.NickName = obj.NickName;
+                    
+                    if (request.Files["HeadPortrait"] != null) {
+                    
+                        var HeadPortraitFile = request.Files["HeadPortrait"];
 
-                    if (obj.HeadPortrait != null)
-                        user.HeadPortrait = obj.HeadPortrait;
+                        if (HeadPortraitFile == null)
+                            throw new RuntimeAbnormal("文件不能为空");
+
+                        string Url = ConfigurationManager.ConnectionStrings["HeadPortrait"].ToString();
+
+                        var TDa = HeadPortraitFile.FileName.Split('.');
+
+                        string FileHz= TDa[TDa.Count()-1];
+
+                        Common.Common.UpLoadFile(HeadPortraitFile, Url, UserCode + "." + FileHz);
+
+                        user.HeadPortrait = Url+""+UserCode + "." + FileHz;
+                    }
+                      
 
                     var fanhui = db.Updateable<Entity.Users>(user).ExecuteCommand();
-
-                    return Json(new { status = 1, message = "修改成功" });
+                    user.Password = "";
+                    return Json(new { status = 1, message = "修改成功",data= user });
                 }
                 catch (RuntimeAbnormal ex)
                 {
@@ -450,7 +486,7 @@ namespace GHPWEB.Areas.API.Controllers
             using (var db = LinkDBHelper.CreateDB())
                 try
                 {
-
+                 
                     string LoginName = "";
 
                     string ResourceType = "";
@@ -505,6 +541,197 @@ namespace GHPWEB.Areas.API.Controllers
                     throw;
                 }
         }
+
+        /// <summary>
+        /// 注销
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public IHttpActionResult Cancellation(dynamic obj) {
+            using (var db=LinkDBHelper.CreateDB())
+                try
+                {
+
+                    if (obj == null)
+                        throw new RuntimeAbnormal("参数不能为空");
+
+                    if(string.IsNullOrEmpty(obj.LoginName))
+                        throw new RuntimeAbnormal("登录名不能为空");
+
+                    string LoginName = obj.LoginName;
+
+                    //清除缓存
+                    CacheHelper.RemoveAllCache(LoginName);
+
+
+                    return Json(new { status = 1, message = "验证成功" });
+                }
+                catch (RuntimeAbnormal ex) {
+                    return Json(new { status = 0, message = ex.ErrorMessage });
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+        }
+
+        [HttpPost]
+        public IHttpActionResult Test() {
+            try
+            {
+
+                HttpContextBase context = (HttpContextBase)Request.Properties["MS_HttpContext"];//获取传统context
+
+                HttpRequestBase request = context.Request;//定义传统request对象
+
+
+                if (request == null)
+                    throw new RuntimeAbnormal("参数不能为空");
+
+
+                if (request.Form["ToKen"] == null)
+                    throw new RuntimeAbnormal("ToKen不能为空");
+
+                var File = request.Files["File"];
+
+                if (File == null)
+                    throw new RuntimeAbnormal("文件不能为空");
+
+
+
+                string ToKen = request.Form["ToKen"];
+
+                //获取缓存数据
+                var CacheData = TokenHelper.GetToKenGlData(ToKen);
+
+                //    return Json(new { status = 1, message = "测试信息", data = CacheData });
+                if (CacheData == null)
+                    throw new RuntimeAbnormal("ToKen已失效,传入的Token为:" + ToKen);
+
+                string UserCode = "";
+
+                string CacheToKen = "";
+
+                foreach (var item in CacheData)
+                {
+                    if (item.Key == "UserCode")
+                        UserCode = item.Value;
+
+                    if (item.Key == "Token")
+                        CacheToKen = item.Value;
+                }
+
+                if (CacheToKen != ToKen)
+                    throw new RuntimeAbnormal("ToKen已失效,传入的Token为:" + ToKen);
+
+                var TDa = File.FileName.Split('.');
+
+                string FileHz = TDa[TDa.Count() - 1];
+
+                string Url = ConfigurationManager.ConnectionStrings["HeadPortrait"].ToString();
+
+                Common.Common.UpLoadFile(File, Url, UserCode + "." + FileHz);
+
+
+
+                return Json(new { Url = Url + "" + UserCode + "." + FileHz, ToKen = ToKen });
+
+
+
+            }
+            catch (RuntimeAbnormal ex) {
+                return Json(new { message=ex.ErrorMessage});
+            }
+            catch (Exception ex)
+            {
+                return Json(new { message = ex.Message });
+            }
+        }
+
+
+        /// <summary>
+        /// 上传图片
+        /// </summary>
+        /// <returns></returns>
+        public IHttpActionResult UploadImage(dynamic obj)
+        {
+
+            try
+            {
+
+                if (obj == null)
+                    throw new RuntimeAbnormal("参数不能为空");
+
+                if (obj.ToKen + ""==""|| obj.ToKen + ""==null)
+                    throw new RuntimeAbnormal("ToKen不能为空");
+
+                if (obj.Type + ""==""|| obj.Type + ""==null)
+                    throw new RuntimeAbnormal("图片用途类型不能为空");
+
+                if (obj.File0 + ""==""|| obj.File0 + ""==null)
+                    throw new RuntimeAbnormal("图片文件不能为空");
+
+                if (obj.Suffix + ""==""|| obj.Suffix + ""==null)
+                    throw new RuntimeAbnormal("图片后缀不能为空");
+
+                string Type = obj.Type;//0 头像 1 用户介绍
+
+                string[] FileArrey = new string[5];
+
+                string Suffix = obj.Suffix;
+
+                string ToKen = obj.ToKen;
+
+                string fileDir=ConfigurationManager.ConnectionStrings["HeadPortrait"].ToString();
+
+                Dictionary<string,string> Cachen=TokenHelper.GetToKenGlData(ToKen);
+
+                string UserCode = "";
+
+                foreach (var item in Cachen)
+                {
+                    if (item.Key == "UserCode")
+                        UserCode = item.Value;
+                }
+
+                
+
+                switch (Type)
+                {
+                    case "0":
+
+                        FileArrey[0] = obj.File0;
+
+                        //转换并保存图片
+                        Base64Helper.Base64StringToImage(FileArrey[0], Suffix, UserCode+ "HeadPortrait."+Suffix,fileDir);
+
+                        break;
+                    case "1":
+                        break;
+                    default:
+                        throw new RuntimeAbnormal("没有对应的处理程序");
+
+                }
+              return Json(new { status =1, message = "上传成功",url= fileDir+UserCode + "HeadPortrait." + Suffix }); ;
+            }
+            catch (RuntimeAbnormal ex)
+            {
+
+                return Json(new { status = 0, message = ex.ErrorMessage });
+
+            }
+            catch (Exception ex)
+            {
+
+                return Json(new { status = 0, message = ex.Message });
+
+            }
+
+        }
+
+
+
 
     }
 }

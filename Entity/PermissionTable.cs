@@ -11,6 +11,12 @@ namespace Entity
     {
 
         /// <summary>
+        /// 权限名称
+        /// </summary>
+        [SugarColumn(IsNullable =true,Length =500)]
+        public string PermissionName { get; set; }
+
+        /// <summary>
         /// 权限编码
         /// </summary>
         [SugarColumn(IsNullable = true, Length = 500)]
@@ -24,5 +30,9 @@ namespace Entity
         public int PermissionType { get; set; }
 
 
+        /// <summary>
+        /// 权限组ID
+        /// </summary>
+        public int GroupID { get; set; }
     }
 }

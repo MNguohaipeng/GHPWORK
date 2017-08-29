@@ -69,6 +69,12 @@ namespace GHPWEB.Controllers
         }
 
         [HttpPost]
+        public JsonResult GetGUID()
+        {
+            return Json(new {start=0,data=Guid.NewGuid().ToString()});
+        }
+
+        [HttpPost]
         public JsonResult GetSelectData(string TableName, string Where, string FildName)
         {
 
